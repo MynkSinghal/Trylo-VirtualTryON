@@ -1,20 +1,17 @@
-
-
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter, Roboto_Flex } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'] });
-const robotoFlex = Roboto_Flex({ 
-  subsets: ['latin'],
-  variable: '--font-roboto-flex'
-});
 
 export const metadata: Metadata = {
-  title: 'FASHN Studio | Virtual Try-on',
-  description: 'Experience the future of fashion with AI-powered virtual try-on',
+  title: 'Trylo',
+  description: 'Experience virtual try-on with AI-powered clothing visualization',
+  icons: {
+    icon: '/icons/favicon.ico',
+  },
 };
 
 export default function RootLayout({
@@ -24,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} ${robotoFlex.variable} bg-black`}>
+      <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
           <Toaster />
