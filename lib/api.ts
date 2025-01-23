@@ -95,7 +95,7 @@ export async function generateTryOn({
 }
 
 async function pollForResults(taskId: string, onStatusUpdate?: (status: string) => void): Promise<string[]> {
-  const maxAttempts = 60; // 5 minutes with 5-second intervals
+  const maxAttempts = 2; // 5 minutes with 5-second intervals
   let attempts = 0;
 
   while (attempts < maxAttempts) {
