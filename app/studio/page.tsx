@@ -213,7 +213,7 @@ export default function StudioPage() {
                   className={`flex-1 py-6 ${category === 'tops' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
                   onClick={() => setCategory('tops')}
                 >
-                  <TopSvg className="w-5 h-5 mr-2" />
+                  <TopSvg className={`w-5 h-5 mr-2 ${category === 'tops' ? 'text-black' : 'text-white'}`} />
                   Top
                 </Button>
                 <Button
@@ -221,7 +221,7 @@ export default function StudioPage() {
                   className={`flex-1 py-6 ${category === 'bottoms' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
                   onClick={() => setCategory('bottoms')}
                 >
-                  <BottomSvg className="w-5 h-5 mr-2" />
+                  <BottomSvg className={`w-5 h-5 mr-2 ${category === 'bottoms' ? 'text-black' : 'text-white'}`} />
                   Bottom
                 </Button>
                 <Button
@@ -229,7 +229,7 @@ export default function StudioPage() {
                   className={`flex-1 py-6 ${category === 'one-pieces' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
                   onClick={() => setCategory('one-pieces')}
                 >
-                  <FullbodySvg className="w-5 h-5 mr-2" />
+                  <FullbodySvg className={`w-5 h-5 mr-2 ${category === 'one-pieces' ? 'text-black' : 'text-white'}`} />
                   Full Body
                 </Button>
               </div>
