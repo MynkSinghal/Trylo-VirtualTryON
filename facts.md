@@ -1,0 +1,50 @@
+- The world’s oldest known garment is a 5,000-year-old linen Tarkhan dress from Egypt.  
+- The modern bikini debuted in 1946, designed by Louis Réard and named after Bikini Atoll.  
+- Levi Strauss and Jacob Davis created the first riveted denim jeans in 1873 for miners.  
+- 17th-century European aristocrats wore heels to signify status.  
+- Tight-lacing corsets in the 1800s often caused health issues like fractured ribs.  
+- The fashion industry contributes ~10% of global carbon emissions.  
+- Producing one cotton T-shirt requires 2,700 liters of water.  
+- 85% of textiles end up in landfills yearly—equivalent to one garbage truck per second.  
+- Mushroom (mycelium) leather is a sustainable alternative gaining popularity.  
+- PET bottles are repurposed into polyester fabric for brands like Patagonia.  
+- The term "denim" comes from *serge de Nîmes*, a fabric from Nîmes, France.  
+- Egyptian cotton is prized for its long fibers, making it softer and more durable.  
+- Silk production began in China ~2700 BCE and was kept secret for millennia.  
+- Cashmere comes from the undercoat of Himalayan goats.  
+- Linen, made from flax, is stronger when wet and biodegradable.  
+- The fashion industry is valued at ~$1.7 trillion, with luxury brands like LVMH leading.  
+- Zara releases 24 collections annually, turning designs into stores in 2 weeks.  
+- The secondhand luxury market could hit $70 billion by 2027.  
+- Fake fashion goods make up 3.3% of global trade.  
+- France’s anti-waste law bans brands from destroying unsold inventory (2020).  
+- Iris van Herpen pioneers 3D-printed haute couture.  
+- Fabrics with sensors monitor health metrics (e.g., Ralph Lauren’s Polo Tech).  
+- Digital-only clothing is sold for avatars (e.g., DressX).  
+- Algorithms like IBM’s Watson create trend-based collections.  
+- Brands like Gucci sell digital wearables for metaverse avatars.  
+- Coco Chanel’s 1926 Little Black Dress revolutionized women’s wardrobes.  
+- White weddings were popularized by Queen Victoria’s 1840 wedding dress.  
+- 1980s shoulder-padded suits symbolized female empowerment.  
+- Hoodies were created in the 1930s for laborers; now a streetwear staple.  
+- The trench coat was designed by Burberry for WWI soldiers.  
+- The kimono is a traditional Japanese garment meaning "thing to wear."  
+- The saree is a 5,000-year-old unstitched drape worn in India.  
+- Scottish kilts date to the 16th century, using tartan patterns for clans.  
+- Ankara fabric is vibrant West African wax-printed cotton.  
+- Hanbok is Korean attire with fluid lines and bright colors for ceremonies.  
+- The global jeans market is projected to reach $88 billion by 2030.  
+- The UN Sustainable Fashion Alliance was launched in 2019 to reduce the industry’s environmental harm.  
+- Brands like Telfar and Palomo Spain blur gender lines in fashion.  
+- Yoga pants and sneakers became everyday wear post-2010.  
+- COVID-19 made masks a fashion accessory (e.g., Off-White’s designs).  
+- Napoleon allegedly added buttons to sleeves to stop soldiers from wiping noses on them.  
+- Women’s clothing often lacks functional pockets compared to men’s.  
+- NYC hosted the first Fashion Week in 1943 during WWII.  
+- The "Nightingale of Kuala Lumpur" diamond dress costs $30 million.  
+- The average garment is worn only 7–10 times before disposal.  
+- Shoe sizes were invented in 1324 by England’s King Edward II.  
+- Celebrities often don’t own their Oscars gowns—they’re loaned.  
+- 16th-century Italy banned prostitutes from wearing blue jeans.  
+- Over 100 major Fashion Weeks occur globally yearly.  
+- The average person spends 2.5 days/year zipping/unzipping clothing.
