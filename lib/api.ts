@@ -12,15 +12,6 @@ interface TryOnParams {
   mode: 'performance' | 'balanced' | 'quality';
   numSamples?: number;
   onStatusUpdate?: (status: string) => void;
-  // Additional FASHN API parameters
-  nsfwFilter?: boolean;
-  coverFeet?: boolean;
-  adjustHands?: boolean;
-  restoreBackground?: boolean;
-  restoreClothes?: boolean;
-  garmentPhotoType?: 'auto' | 'flat-lay' | 'model';
-  longTop?: boolean;
-  seed?: number;
 }
 
 // Convert File to base64
@@ -46,14 +37,6 @@ export async function generateTryOn({
   mode = 'balanced',
   numSamples = 1,
   onStatusUpdate,
-  nsfwFilter = true,
-  coverFeet = false,
-  adjustHands = false,
-  restoreBackground = false,
-  restoreClothes = false,
-  garmentPhotoType = 'auto',
-  longTop = false,
-  seed = 42,
 }: TryOnParams): Promise<string[]> {
   if (!API_KEY) {
     throw new Error('API key not configured. Please check your environment variables.');
@@ -79,14 +62,6 @@ export async function generateTryOn({
         category,
         mode,
         num_samples: numSamples,
-        nsfw_filter: nsfwFilter,
-        cover_feet: coverFeet,
-        adjust_hands: adjustHands,
-        restore_background: restoreBackground,
-        restore_clothes: restoreClothes,
-        garment_photo_type: garmentPhotoType,
-        long_top: longTop,
-        seed,
       }),
     });
 
@@ -94,7 +69,7 @@ export async function generateTryOn({
       let errorMessage = 'Failed to generate try-on';
       try {
         const errorData = await response.json();
-        errorMessage = errorData.error || errorMessage;
+        errorMessage = errorData.message || errorData.error || errorMessage;
         console.error('API Error Response:', errorData);
       } catch (e) {
         console.error('Failed to parse error response:', e);
@@ -120,10 +95,9 @@ export async function generateTryOn({
 }
 
 async function pollForResults(taskId: string, onStatusUpdate?: (status: string) => void): Promise<string[]> {
-  const maxAttempts = 48; // 4 minutes with 5-second intervals (respecting rate limits)
+  const maxAttempts = 2; // 5 minutes with 5-second intervals
   let attempts = 0;
 
-  // Status types from API: 'starting' | 'in_queue' | 'processing' | 'completed' | 'failed'
   while (attempts < maxAttempts) {
     try {
       const response = await fetch(`${API_BASE_URL}/status/${taskId}`, {
@@ -136,7 +110,7 @@ async function pollForResults(taskId: string, onStatusUpdate?: (status: string) 
         let errorMessage = 'Failed to check try-on status';
         try {
           const errorData = await response.json();
-          errorMessage = errorData.error || errorMessage;
+          errorMessage = errorData.message || errorData.error || errorMessage;
           console.error('Status Check Error:', errorData);
         } catch (e) {
           console.error('Failed to parse status error response:', e);
@@ -156,14 +130,7 @@ async function pollForResults(taskId: string, onStatusUpdate?: (status: string) 
       } else if (data.status === 'failed') {
         throw new Error(data.error || 'Generation failed without specific error message');
       } else {
-        // Map API status to user-friendly messages
-        const statusMessages = {
-          'starting': 'Initializing...',
-          'in_queue': 'Waiting in queue...',
-          'processing': 'Processing your image...'
-        };
-        const message = statusMessages[data.status as keyof typeof statusMessages] || 'Processing...';
-        onStatusUpdate?.(message);
+        onStatusUpdate?.(data.status_message || `${data.status || 'Processing'}... (Attempt ${attempts + 1}/${maxAttempts})`);
         await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
         attempts++;
       }
@@ -173,5 +140,5 @@ async function pollForResults(taskId: string, onStatusUpdate?: (status: string) 
     }
   }
 
-  throw new Error('Timed out waiting for results. Please try again.');
+  throw new Error('Timed out waiting for results after 5 minutes');
 }
