@@ -1,20 +1,23 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
+import { AuroraText } from "@/components/magicui/aurora-text";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center relative">
       <div className="absolute top-6 left-6 flex items-center gap-2">
         <Sparkles className="w-6 h-6 text-yellow-400" />
-        <span className="text-xl font-bold">FASHN</span>
+        <span className="text-xl font-bold">Mayank</span>
       </div>
       
       <div className="max-w-3xl mx-auto text-center space-y-6 px-4">
         <h1 className="text-7xl font-bold tracking-tight">
           Virtual Try-On
           <div className="text-yellow-400 flex items-center justify-center gap-2">
-            Reimagined
+            <AuroraText>Reimagined</AuroraText>
             <Sparkles className="w-8 h-8" />
           </div>
         </h1>

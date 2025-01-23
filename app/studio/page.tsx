@@ -111,7 +111,7 @@ export default function StudioPage() {
       <nav className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-2">
           <Sparkles className="w-6 h-6 text-yellow-400" />
-          <span className="text-xl font-bold">FASHN Studio</span>
+          <span className="text-xl font-bold">Mayank Studio</span>
         </div>
       </nav>
 
