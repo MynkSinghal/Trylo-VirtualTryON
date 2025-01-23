@@ -1,34 +1,17 @@
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 const API_BASE_URL = 'https://api.fashn.ai/v1';
 const API_KEY = process.env.NEXT_PUBLIC_FASHN_API_KEY;
 
 export type Category = 'tops' | 'bottoms' | 'one-pieces';
 
-interface FashnAIResponse {
-  id: string;
-  status?: string;
-  output?: string[];
-  error: string | null;
-}
-
-interface TryOnOptions {
-  modelImage: string | File;
-  garmentImage: string | File;
+interface TryOnParams {
+  modelImage: File;
+  garmentImage: File;
   category: Category;
-  mode?: 'performance' | 'balanced' | 'quality';
+  mode: 'performance' | 'balanced' | 'quality';
   numSamples?: number;
-}
-
-async function uploadToCloudinary(file: File): Promise<string> {
-  // In a real implementation, you would upload to your server or cloud storage
-  // For now, we'll simulate it by returning a data URL
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+  onStatusUpdate?: (status: string) => void;
 }
 
 export async function generateTryOn({
@@ -38,78 +21,77 @@ export async function generateTryOn({
   mode = 'balanced',
   numSamples = 1,
   onStatusUpdate,
-}: TryOnOptions & { onStatusUpdate: (status: string) => void }): Promise<string[]> {
+}: TryOnParams): Promise<string[]> {
   if (!API_KEY) {
-    throw new Error('API key not configured');
+    throw new Error('API key not found');
   }
 
-  try {
-    // Convert File objects to URLs if needed
-    const modelUrl = modelImage instanceof File ? await uploadToCloudinary(modelImage) : modelImage;
-    const garmentUrl = garmentImage instanceof File ? await uploadToCloudinary(garmentImage) : garmentImage;
+  const formData = new FormData();
+  formData.append('model_image', modelImage);
+  formData.append('garment_image', garmentImage);
+  formData.append('category', category);
+  formData.append('mode', mode);
+  formData.append('num_samples', numSamples.toString());
 
-    // Initial API call to start the generation
-    const response = await fetch(`${API_BASE_URL}/run`, {
+  try {
+    onStatusUpdate?.('Uploading images...');
+    const response = await fetch(`${API_BASE_URL}/try-on`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model_image: modelUrl,
-        garment_image: garmentUrl,
-        category: category === 'full-body' ? 'one-pieces' : category,
-        mode,
-        num_samples: numSamples,
-      }),
+      body: formData,
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to start generation');
+      const error = await response.json().catch(() => ({ message: 'Unknown error' }));
+      throw new Error(error.message || 'Failed to generate try-on');
     }
 
-    const { id } = await response.json() as FashnAIResponse;
-
+    const { task_id } = await response.json();
+    
     // Poll for results
-    const result = await pollForResult(id, onStatusUpdate);
-    return result.output || [];
+    const results = await pollForResults(task_id, onStatusUpdate);
+    return results;
   } catch (error) {
-    console.error('Try-on generation failed:', error);
+    console.error('Try-on generation error:', error);
     throw error;
   }
 }
 
-async function pollForResult(id: string, updateStatus: (status: string) => void): Promise<FashnAIResponse> {
-  let attempts = 0;
+async function pollForResults(taskId: string, onStatusUpdate?: (status: string) => void): Promise<string[]> {
   const maxAttempts = 60; // 5 minutes with 5-second intervals
-  
+  let attempts = 0;
+
   while (attempts < maxAttempts) {
-    const response = await fetch(`${API_BASE_URL}/status/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${API_KEY}`,
-      },
-    });
-    
-    const result = await response.json() as FashnAIResponse;
-    
-    switch (result.status) {
-      case 'completed':
-        updateStatus('Generation completed!');
-        return result;
-      case 'failed':
-        throw new Error(result.error || 'Generation failed');
-      case 'processing':
-        updateStatus('Processing your image... This may take a few minutes.');
-        break;
-      case 'queued':
-        updateStatus('Waiting in queue... We\'ll start processing soon.');
-        break;
+    try {
+      const response = await fetch(`${API_BASE_URL}/try-on/${taskId}`, {
+        headers: {
+          'Authorization': `Bearer ${API_KEY}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to check try-on status');
+      }
+
+      const data = await response.json();
+      
+      if (data.status === 'completed') {
+        onStatusUpdate?.('Generation complete!');
+        return data.results;
+      } else if (data.status === 'failed') {
+        throw new Error(data.error || 'Generation failed');
+      } else {
+        onStatusUpdate?.(data.status_message || 'Processing...');
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+        attempts++;
+      }
+    } catch (error) {
+      console.error('Error polling for results:', error);
+      throw error;
     }
-    
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    attempts++;
   }
-  
-  throw new Error('Timeout waiting for result');
+
+  throw new Error('Timed out waiting for results');
 }
