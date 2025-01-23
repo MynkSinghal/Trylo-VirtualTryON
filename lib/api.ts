@@ -35,7 +35,7 @@ export async function generateTryOn({
 
   try {
     onStatusUpdate?.('Uploading images...');
-    const response = await fetch(`${API_BASE_URL}/try-on`, {
+    const response = await fetch(`${API_BASE_URL}/run`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${API_KEY}`,
