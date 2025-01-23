@@ -161,6 +161,10 @@ const config: Config = {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
   			'shine': 'shine 5s linear infinite',
+  			'aurora-1': 'aurora-border 6s ease-in-out infinite, aurora-1 12s ease-in-out infinite alternate',
+  			'aurora-2': 'aurora-border 6s ease-in-out infinite, aurora-2 12s ease-in-out infinite alternate',
+  			'aurora-3': 'aurora-border 6s ease-in-out infinite, aurora-3 12s ease-in-out infinite alternate',
+  			'aurora-4': 'aurora-border 6s ease-in-out infinite, aurora-4 12s ease-in-out infinite alternate'
   		}
   	}
   },

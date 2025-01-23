@@ -1,4 +1,6 @@
-import { forwardRef, useMemo, useRef, useEffect } from "react";
+'use client';
+
+import { forwardRef, useMemo, useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 function useAnimationFrame(callback: () => void) {
@@ -68,6 +70,12 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>((p
     style,
     ...restProps
   } = props;
+
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const interpolatedSettingsRef = useRef<string[]>([]);
@@ -145,6 +153,14 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>((p
 
   const words = label.split(" ");
   let letterIndex = 0;
+
+  if (!isMounted) {
+    return (
+      <span className={className} style={style} {...restProps}>
+        {label}
+      </span>
+    );
+  }
 
   return (
     <span

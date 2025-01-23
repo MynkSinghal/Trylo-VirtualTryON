@@ -18,7 +18,7 @@ export default function Home() {
         <span className="text-xl font-bold">Mayank</span>
       </div>
       
-      <div className="max-w-3xl mx-auto text-center space-y-6 px-4">
+      <div className="max-w-3xl mx-auto text-center space-y-12 px-4">
         <h1 className="text-7xl font-bold tracking-tight">
           Virtual Try-On
           <div className="text-yellow-400 flex items-center justify-center gap-2">
@@ -30,7 +30,7 @@ export default function Home() {
         <div ref={descriptionRef} className="relative">
           <VariableProximity
             label="Experience the future of fashion with our AI-powered virtual try-on technology. Upload your photo and try on any garment instantly."
-            className="text-lg text-gray-400 max-w-2xl mx-auto mt-12"
+            className="text-lg text-gray-400 block"
             fromFontVariationSettings="'wght' 400, 'opsz' 9"
             toFontVariationSettings="'wght' 1000, 'opsz' 40"
             containerRef={descriptionRef}
@@ -42,10 +42,10 @@ export default function Home() {
         <Button 
           asChild
           size="lg" 
-          className="bg-yellow-400 hover:bg-yellow-500 text-black text-lg px-8 py-6 mt-8"
+          className="bg-black hover:bg-gray-900 border-2 border-yellow-400 rounded-full text-lg px-8 py-6 mt-8 transition-all duration-300 hover:scale-105"
         >
           <Link href="/studio">
-            <ShinyText text="Enter Studio →" speed={3} />
+            <ShinyText text="Enter Studio →" speed={3} className="text-yellow-400" />
           </Link>
         </Button>
       </div>
