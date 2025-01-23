@@ -95,10 +95,10 @@ export async function generateTryOn({
 }
 
 async function pollForResults(taskId: string, onStatusUpdate?: (status: string) => void): Promise<string[]> {
-  const maxAttempts = 2; // 5 minutes with 5-second intervals
-  let attempts = 0;
+  // Remove maxAttempts as we'll wait indefinitely
+  const POLL_INTERVAL = 5000; // 5 seconds between polls
 
-  while (attempts < maxAttempts) {
+  while (true) { // Keep polling until we get a definitive response
     try {
       const response = await fetch(`${API_BASE_URL}/status/${taskId}`, {
         headers: {
@@ -110,35 +110,65 @@ async function pollForResults(taskId: string, onStatusUpdate?: (status: string) 
         let errorMessage = 'Failed to check try-on status';
         try {
           const errorData = await response.json();
-          errorMessage = errorData.message || errorData.error || errorMessage;
+          errorMessage = errorData.error || errorMessage;
           console.error('Status Check Error:', errorData);
         } catch (e) {
           console.error('Failed to parse status error response:', e);
         }
-        throw new Error(`Status Check Error (${response.status}): ${errorMessage}`);
+        // Only throw if it's a fatal error (not a temporary one)
+        if (response.status !== 429 && response.status !== 503) {
+          throw new Error(`Status Check Error (${response.status}): ${errorMessage}`);
+        }
+        // For rate limits (429) or service unavailable (503), we'll retry
+        await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL * 2)); // Wait longer for rate limits
+        continue;
       }
 
       const data = await response.json();
       console.log('Poll response:', data);
       
-      if (data.status === 'completed') {
-        onStatusUpdate?.('Generation complete!');
-        if (!data.output || !data.output.length) {
-          throw new Error('No results received from the API');
-        }
-        return data.output;
-      } else if (data.status === 'failed') {
-        throw new Error(data.error || 'Generation failed without specific error message');
-      } else {
-        onStatusUpdate?.(data.status_message || `${data.status || 'Processing'}... (Attempt ${attempts + 1}/${maxAttempts})`);
-        await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
-        attempts++;
+      // Map API status to user-friendly messages
+      const statusMessages = {
+        'starting': 'Initializing generation...',
+        'in_queue': 'Waiting in queue...',
+        'processing': 'Processing your image...',
+        'completed': 'Generation complete!',
+        'failed': 'Generation failed',
+        'cancelled': 'Generation was cancelled'
+      };
+
+      // Update status message
+      const message = statusMessages[data.status as keyof typeof statusMessages] || 'Processing...';
+      onStatusUpdate?.(message);
+      
+      // Handle definitive statuses
+      switch (data.status) {
+        case 'completed':
+          if (!data.output || !data.output.length) {
+            throw new Error('No results received from the API');
+          }
+          return data.output;
+        case 'failed':
+          throw new Error(data.error || 'Generation failed without specific error message');
+        case 'cancelled':
+          throw new Error('Generation was cancelled');
+        default:
+          // For all other statuses (starting, in_queue, processing), keep polling
+          await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL));
+          continue;
       }
     } catch (error) {
-      console.error('Error polling for results:', error);
-      throw error;
+      // If it's a known fatal error, throw it
+      if (error instanceof Error && 
+          (error.message.includes('cancelled') || 
+           error.message.includes('failed') || 
+           error.message.includes('No results'))) {
+        throw error;
+      }
+      
+      // For other errors (network issues, etc.), log and retry
+      console.error('Error polling for results (retrying):', error);
+      await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL));
     }
   }
-
-  throw new Error('Timed out waiting for results after 5 minutes');
 }

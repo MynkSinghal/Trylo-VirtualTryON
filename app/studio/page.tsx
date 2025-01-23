@@ -126,6 +126,7 @@ export default function StudioPage() {
 
     setIsProcessing(true);
     setResult(null); // Reset result when starting new processing
+    
     try {
       const results = await generateTryOn({
         modelImage,
@@ -133,13 +134,21 @@ export default function StudioPage() {
         category,
         mode,
         numSamples: 1,
-        onStatusUpdate: setProcessingStatus,
+        onStatusUpdate: (status) => {
+          console.log('Status update:', status);
+          setProcessingStatus(status);
+        },
       });
       
+      console.log('Received results:', results);
       if (results.length > 0) {
+        console.log('Setting result to:', results[0]);
         setResult(results[0]);
+      } else {
+        throw new Error('No results received from the API');
       }
     } catch (error) {
+      console.error('Generation error:', error);
       toast({
         title: "Generation Failed",
         description: error instanceof Error ? error.message : "Failed to generate try-on image",
