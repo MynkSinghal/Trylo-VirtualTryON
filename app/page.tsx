@@ -1,10 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 import { AuroraText } from "@/components/magicui/aurora-text";
-import ShinyText from "@/components/ui/shiny-text";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import VariableProximity from "@/components/ui/variable-proximity";
 import { useRef } from 'react';
 
@@ -21,7 +20,7 @@ export default function Home() {
       <div className="max-w-3xl mx-auto text-center space-y-12 px-4">
         <h1 className="text-7xl font-bold tracking-tight">
           Virtual Try-On
-          <div className="text-yellow-400 flex items-center justify-center gap-2">
+          <div className="text-yellow-400 flex items-center justify-center gap-2 mt-2 mb-4">
             <AuroraText>Reimagined</AuroraText>
             <Sparkles className="w-8 h-8" />
           </div>
@@ -39,15 +38,11 @@ export default function Home() {
           />
         </div>
 
-        <Button 
-          asChild
-          size="lg" 
-          className="bg-black hover:bg-gray-900 border-2 border-yellow-400 rounded-full text-lg px-8 py-6 mt-8 transition-all duration-300 hover:scale-105"
-        >
-          <Link href="/studio">
-            <ShinyText text="Enter Studio →" speed={3} className="text-yellow-400" />
-          </Link>
-        </Button>
+        <Link href="/studio" className="inline-block">
+          <InteractiveHoverButton>
+            Enter Studio
+          </InteractiveHoverButton>
+        </Link>
       </div>
     </main>
   );

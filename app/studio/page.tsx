@@ -8,14 +8,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { 
-  Sparkles, Upload, Shirt as Tshirt, 
-  WaypointsIcon as PantsIcon, 
-  Trees as Dress, 
+  Sparkles, Upload, Shirt, 
+  Waypoints, 
+  Blocks, 
   Image as ImageIcon, 
   Loader2,
-  Zap,
-  Scale,
-  Crown
+  Download,
+  ClipboardPaste
 } from 'lucide-react';
 import Image from 'next/image';
 import { generateTryOn, type Category } from '@/lib/api';
@@ -38,37 +37,72 @@ export default function StudioPage() {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const preview = e.target?.result as string;
-        if (type === 'model') {
-          setModelImage(file);
-          setModelPreview(preview);
-        } else {
-          setGarmentImage(file);
-          setGarmentPreview(preview);
-        }
-      };
-      reader.readAsDataURL(file);
+      handleImageFile(file, type);
     }
+  };
+
+  const handlePaste = async (type: 'model' | 'garment') => {
+    try {
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        for (const type of item.types) {
+          if (type.startsWith('image/')) {
+            const blob = await item.getType(type);
+            const file = new File([blob], 'pasted-image.png', { type });
+            handleImageFile(file, type === 'model' ? 'model' : 'garment');
+            return;
+          }
+        }
+      }
+      toast({
+        title: "No Image Found",
+        description: "No image found in clipboard",
+        variant: "destructive"
+      });
+    } catch (error) {
+      toast({
+        title: "Clipboard Error",
+        description: "Failed to access clipboard",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleImageFile = (file: File, type: 'model' | 'garment') => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const preview = e.target?.result as string;
+      if (type === 'model') {
+        setModelImage(file);
+        setModelPreview(preview);
+      } else {
+        setGarmentImage(file);
+        setGarmentPreview(preview);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>, type: 'model' | 'garment') => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const preview = e.target?.result as string;
-        if (type === 'model') {
-          setModelImage(file);
-          setModelPreview(preview);
-        } else {
-          setGarmentImage(file);
-          setGarmentPreview(preview);
-        }
-      };
-      reader.readAsDataURL(file);
+      handleImageFile(file, type);
     }
+  };
+
+  const handleDownload = async () => {
+    if (!result) return;
+    
+    const response = await fetch(result);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'try-on-result.png';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   };
 
   const processImages = async () => {
@@ -144,13 +178,23 @@ export default function StudioPage() {
                   onChange={(e) => handleFileSelect(e, 'model')}
                   id="model-upload"
                 />
-                <Button 
-                  asChild 
-                  variant="outline"
-                  className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
-                >
-                  <label htmlFor="model-upload">Choose File</label>
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    asChild 
+                    variant="outline"
+                    className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                  >
+                    <label htmlFor="model-upload">Choose File</label>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                    onClick={() => handlePaste('model')}
+                  >
+                    <ClipboardPaste className="w-4 h-4 mr-2" />
+                    Paste
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -168,7 +212,7 @@ export default function StudioPage() {
                 className={`flex-1 py-6 ${category === 'tops' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
                 onClick={() => setCategory('tops')}
               >
-                <Tshirt className="w-5 h-5 mr-2" />
+                <Shirt className="w-5 h-5 mr-2" />
                 Top
               </Button>
               <Button
@@ -176,7 +220,7 @@ export default function StudioPage() {
                 className={`flex-1 py-6 ${category === 'bottoms' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
                 onClick={() => setCategory('bottoms')}
               >
-                <PantsIcon className="w-5 h-5 mr-2" />
+                <Waypoints className="w-5 h-5 mr-2" />
                 Bottom
               </Button>
               <Button
@@ -184,7 +228,7 @@ export default function StudioPage() {
                 className={`flex-1 py-6 ${category === 'one-pieces' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
                 onClick={() => setCategory('one-pieces')}
               >
-                <Dress className="w-5 h-5 mr-2" />
+                <Blocks className="w-5 h-5 mr-2" strokeWidth={1.5} />
                 Full Body
               </Button>
             </div>
@@ -215,13 +259,23 @@ export default function StudioPage() {
                     onChange={(e) => handleFileSelect(e, 'garment')}
                     id="garment-upload"
                   />
-                  <Button 
-                    asChild 
-                    variant="outline"
-                    className="mt-4"
-                  >
-                    <label htmlFor="garment-upload">Choose File</label>
-                  </Button>
+                  <div className="flex gap-2 justify-center">
+                    <Button 
+                      asChild 
+                      variant="outline"
+                      className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                    >
+                      <label htmlFor="garment-upload">Choose File</label>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                      onClick={() => handlePaste('garment')}
+                    >
+                      <ClipboardPaste className="w-4 h-4 mr-2" />
+                      Paste
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -265,7 +319,19 @@ export default function StudioPage() {
 
         {/* Updated Result Box */}
         <Card className="p-6 bg-gray-900/50 border-gray-800">
-          <h2 className="text-2xl font-semibold mb-4">Result</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold">Result</h2>
+            {result && !isProcessing && (
+              <Button
+                variant="outline"
+                className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                onClick={handleDownload}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download
+              </Button>
+            )}
+          </div>
           <div className="border-2 border-gray-700 rounded-lg p-8 h-[400px]">
             {isProcessing ? (
               <ProcessingStatus status={processingStatus} />
