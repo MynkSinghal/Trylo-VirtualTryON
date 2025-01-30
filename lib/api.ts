@@ -1,23 +1,31 @@
 import { toast } from '@/hooks/use-toast';
+import { createGeneration } from '@/lib/supabase/database';
+import { uploadImage } from '@/lib/supabase/storage';
+import type { Generation } from '@/lib/supabase/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_FASHN_API_URL || 'https://api.fashn.ai/v1';
+const API_BASE_URL = 'https://api.fashn.ai/v1';
 const API_KEY = process.env.NEXT_PUBLIC_FASHN_API_KEY;
+const POLL_INTERVAL = 2000; // 2 seconds
+const MAX_POLLING_TIME = 60000; // 60 seconds
 
-export type Category = 'tops' | 'bottoms' | 'one-pieces';
+export type Category = 'tops' | 'bottoms' | 'fullbody';
+export type QualityMode = 'performance' | 'balanced' | 'quality';
 
-interface TryOnParams {
+interface GenerateTryOnParams {
   modelImage: File;
   garmentImage: File;
   category: Category;
-  mode: 'performance' | 'balanced' | 'quality';
+  mode: QualityMode;
   numSamples?: number;
   onStatusUpdate?: (status: string) => void;
+  userId: string;
 }
 
 // Convert File to base64
 async function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
+    reader.readAsDataURL(file);
     reader.onload = () => {
       if (typeof reader.result === 'string') {
         resolve(reader.result);
@@ -26,7 +34,6 @@ async function fileToBase64(file: File): Promise<string> {
       }
     };
     reader.onerror = reject;
-    reader.readAsDataURL(file);
   });
 }
 
@@ -34,23 +41,25 @@ export async function generateTryOn({
   modelImage,
   garmentImage,
   category,
-  mode = 'balanced',
+  mode,
   numSamples = 1,
   onStatusUpdate,
-}: TryOnParams): Promise<string[]> {
+  userId,
+}: GenerateTryOnParams): Promise<string[]> {
   if (!API_KEY) {
-    throw new Error('API key not configured. Please check your environment variables.');
+    throw new Error('FASHN API key not configured');
   }
 
   try {
-    onStatusUpdate?.('Converting images...');
-    const [modelBase64, garmentBase64] = await Promise.all([
-      fileToBase64(modelImage),
-      fileToBase64(garmentImage)
-    ]);
+    onStatusUpdate?.('Preparing images...');
 
-    onStatusUpdate?.('Sending request...');
-    const response = await fetch(`${API_BASE_URL}/run`, {
+    // Convert images to base64
+    const modelBase64 = await fileToBase64(modelImage);
+    const garmentBase64 = await fileToBase64(garmentImage);
+
+    // Initiate the generation
+    onStatusUpdate?.('Starting generation...');
+    const initResponse = await fetch(`${API_BASE_URL}/run`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${API_KEY}`,
@@ -59,40 +68,145 @@ export async function generateTryOn({
       body: JSON.stringify({
         model_image: modelBase64,
         garment_image: garmentBase64,
-        category,
-        mode,
-        num_samples: numSamples,
-        restore_background: true,
-      }),
+        category: category.toLowerCase(),
+        mode: mode.toLowerCase(),
+        num_samples: numSamples
+      })
     });
 
-    if (!response.ok) {
-      let errorMessage = 'Failed to generate try-on';
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorData.error || errorMessage;
-        console.error('API Error Response:', errorData);
-      } catch (e) {
-        console.error('Failed to parse error response:', e);
-      }
-      throw new Error(`API Error (${response.status}): ${errorMessage}`);
+    if (!initResponse.ok) {
+      const errorData = await initResponse.json().catch(() => null);
+      throw new Error(errorData?.message || `Failed to initiate generation (${initResponse.status})`);
     }
 
-    const data = await response.json();
-    if (!data.id) {
-      throw new Error('No task ID received from the API');
-    }
-    
+    const { id } = await initResponse.json();
+    if (!id) throw new Error('No generation ID received');
+
     // Poll for results
-    const results = await pollForResults(data.id, onStatusUpdate);
-    return results;
-  } catch (error) {
-    console.error('Try-on generation error:', error);
-    if (error instanceof Error) {
-      throw new Error(`Generation failed: ${error.message}`);
+    onStatusUpdate?.('Processing...');
+    const startTime = Date.now();
+
+    while (Date.now() - startTime < MAX_POLLING_TIME) {
+      const statusResponse = await fetch(`${API_BASE_URL}/status/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${API_KEY}`,
+        }
+      });
+
+      if (!statusResponse.ok) {
+        throw new Error(`Failed to check status (${statusResponse.status})`);
+      }
+
+      const data = await statusResponse.json();
+      console.log('Status response:', data);
+
+      switch (data.status) {
+        case 'completed':
+          if (!data.output?.length) {
+            throw new Error('No output received');
+          }
+
+          // Generate unique timestamps for each file
+          const timestamp = Date.now();
+          const modelImagePath = `${userId}/${timestamp}_model.${modelImage.name.split('.').pop()}`;
+          const garmentImagePath = `${userId}/${timestamp}_garment.${garmentImage.name.split('.').pop()}`;
+          const resultImagePath = `${userId}/${timestamp}_result.jpg`;
+
+          // Store the successful generation in Supabase
+          await createGeneration({
+            userId,
+            modelImagePath,
+            garmentImagePath,
+            resultImagePath,
+            category,
+            mode,
+            processingTime: `${((Date.now() - startTime) / 1000).toFixed(1)}s`
+          });
+
+          // Upload images to Supabase storage
+          await Promise.all([
+            uploadImage('generations-model-images', modelImagePath, modelImage),
+            uploadImage('generations-garment-images', garmentImagePath, garmentImage),
+            // Download and upload the result image
+            fetch(data.output[0])
+              .then(res => res.blob())
+              .then(blob => uploadImage('generations-result-images', resultImagePath, blob))
+          ]);
+
+          return data.output;
+
+        case 'failed':
+          throw new Error(data.error?.message || 'Generation failed');
+
+        case 'starting':
+        case 'in_queue':
+        case 'processing':
+          onStatusUpdate?.(data.status);
+          await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL));
+          continue;
+
+        default:
+          throw new Error(`Unknown status: ${data.status}`);
+      }
     }
+
+    throw new Error('Generation timed out');
+
+  } catch (error) {
+    console.error('FASHN API Error:', error);
     throw error;
   }
+}
+
+async function storeGeneration({
+  userId,
+  modelImage,
+  garmentImage,
+  resultUrls,
+  category,
+  mode,
+}: {
+  userId: string;
+  modelImage: File;
+  garmentImage: File;
+  resultUrls: string[];
+  category: Category;
+  mode: QualityMode;
+}) {
+  // Upload images to Supabase storage
+  const modelImagePath = `${userId}/${Date.now()}_model.${modelImage.name.split('.').pop()}`;
+  const garmentImagePath = `${userId}/${Date.now()}_garment.${garmentImage.name.split('.').pop()}`;
+  const resultImagePath = `${userId}/${Date.now()}_result.jpg`;
+
+  // Upload files to Supabase storage
+  await Promise.all([
+    uploadToSupabase('generations-model-images', modelImagePath, modelImage),
+    uploadToSupabase('generations-garment-images', garmentImagePath, garmentImage),
+    // Download and upload result image
+    fetch(resultUrls[0])
+      .then(res => res.blob())
+      .then(blob => uploadToSupabase('generations-result-images', resultImagePath, blob))
+  ]);
+
+  // Store generation record in database
+  await supabase.from('generations').insert({
+    user_id: userId,
+    model_image_path: modelImagePath,
+    garment_image_path: garmentImagePath,
+    result_image_path: resultImagePath,
+    category,
+    mode,
+  });
+
+  return { modelImagePath, garmentImagePath, resultImagePath };
+}
+
+async function uploadToSupabase(bucket: string, path: string, file: File | Blob) {
+  const { error } = await supabase.storage
+    .from(bucket)
+    .upload(path, file);
+
+  if (error) throw error;
 }
 
 async function pollForResults(taskId: string, onStatusUpdate?: (status: string) => void): Promise<string[]> {
@@ -172,4 +286,21 @@ async function pollForResults(taskId: string, onStatusUpdate?: (status: string) 
       await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL));
     }
   }
+}
+
+// Helper function to convert base64 to File
+async function base64ToFile(base64String: string, filename: string): Promise<File> {
+  const res = await fetch(base64String);
+  const blob = await res.blob();
+  return new File([blob], filename, { type: blob.type });
+}
+
+// Helper function to validate image
+async function validateImage(file: File): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = () => reject(new Error('Invalid image file'));
+    img.src = URL.createObjectURL(file);
+  });
 }
