@@ -4,12 +4,18 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Sparkles, Upload,
   Image as ImageIcon, 
   Loader2,
   Download,
+  Zap,
+  Scale,
+  Diamond,
+  Play,
 } from 'lucide-react';
 import Image from 'next/image';
 import { generateTryOn, type Category } from '@/lib/api';
@@ -20,11 +26,13 @@ import FullbodySvg from '../icons/fullbody.svg';
 import Link from 'next/link';
 import { Footer } from '../components/Footer';
 import { Logo } from '../components/Logo';
+import { useAuth } from '@/contexts/auth-context';
+import { useRouter } from 'next/navigation';
 
 const QUALITY_TIMES = {
-  performance: '~9sec',
-  balanced: '~15sec',
-  quality: '~20sec'
+  performance: '9sec',
+  balanced: '15sec',
+  quality: '20sec'
 } as const;
 
 export default function StudioPage() {
@@ -38,6 +46,8 @@ export default function StudioPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStatus, setProcessingStatus] = useState<string>('');
   const [result, setResult] = useState<string | null>(null);
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
 
   const handleDrop = async (e: React.DragEvent, type: 'model' | 'garment') => {
     e.preventDefault();
@@ -77,6 +87,13 @@ export default function StudioPage() {
     return () => document.removeEventListener('paste', handlePaste);
   }, []);
 
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      router.push('/login');
+    }
+  }, [user, authLoading, router]);
+
   const handleImageFile = (file: File, type: 'model' | 'garment') => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -115,17 +132,19 @@ export default function StudioPage() {
   };
 
   const processImages = async () => {
-    if (!modelImage || !garmentImage) {
+    if (!modelImage || !garmentImage || !user) {
       toast({
-        title: "Missing Images",
-        description: "Please upload both a model and garment image.",
+        title: "Error",
+        description: !user 
+          ? "Please log in to generate images" 
+          : "Please upload both a model and garment image.",
         variant: "destructive"
       });
       return;
     }
 
     setIsProcessing(true);
-    setResult(null); // Reset result when starting new processing
+    setResult(null);
     
     try {
       const results = await generateTryOn({
@@ -138,6 +157,7 @@ export default function StudioPage() {
           console.log('Status update:', status);
           setProcessingStatus(status);
         },
+        userId: user.id,
       });
       
       console.log('Received results:', results);
@@ -160,205 +180,308 @@ export default function StudioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
-      <div className="flex-1 p-6">
-        <nav className="flex justify-between items-center mb-8">
-          <Logo />
-        </nav>
+    <div className="min-h-screen bg-black text-white">
+      <nav className="container flex justify-between items-center h-16 px-6">
+        <Logo />
+        <Link href="/my-generations">
+          <InteractiveHoverButton className="px-8 py-2 text-sm flex items-center gap-2 min-w-[160px] whitespace-nowrap">
+            
+            My Generations
+          </InteractiveHoverButton>
+        </Link>
+      </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Model Upload Box */}
-          <Card className="p-6 bg-gray-900/50 border-gray-800">
-            <h2 className="text-2xl font-semibold mb-4">Upload Model Photo</h2>
-            <div
-              id="model-box"
-              className="border-2 border-dashed border-gray-700 rounded-lg p-12 h-[400px] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:border-yellow-400 hover:bg-gray-900/30"
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => handleDrop(e, 'model')}
-              tabIndex={0}
-            >
-              {modelPreview ? (
-                <div className="relative h-full w-full">
-                  <Image
-                    src={modelPreview}
-                    alt="Model preview"
-                    fill
-                    className="object-contain"
-                    unoptimized
-                  />
+      <main className="container mx-auto px-6 py-8">
+        <div className="min-h-screen bg-black text-white flex flex-col">
+          <div className="flex-1 p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Model Upload Box */}
+              <Card className="p-6 bg-gray-900/50 border-gray-800">
+                <h2 className="text-2xl font-semibold mb-4">Upload Model Photo</h2>
+                <div
+                  id="model-box"
+                  className="border-2 border-dashed border-gray-500 rounded-lg p-6 h-[500px] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:border-yellow-400 hover:bg-gray-700/30 relative group"
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => handleDrop(e, 'model')}
+                  tabIndex={0}
+                >
+                  {modelPreview ? (
+                    <div className="relative h-full w-full group flex items-center justify-center">
+                      <Image
+                        src={modelPreview}
+                        alt="Model preview"
+                        fill
+                        className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-50"
+                        unoptimized
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                        <div className="bg-black/80 p-4 rounded-lg flex flex-col items-center gap-2">
+                          <p className="text-sm text-gray-300">Click or drag to replace</p>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleFileSelect(e, 'model')}
+                            id="model-upload"
+                          />
+                          <Button 
+                            asChild 
+                            variant="outline"
+                            size="sm"
+                            className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                          >
+                            <label htmlFor="model-upload">Replace Image</label>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-6 text-center">
+                      <div className="w-20 h-20 mx-auto rounded-full bg-gray-900/50 flex items-center justify-center transition-transform group-hover:scale-110 duration-300">
+                        <Upload className="w-10 h-10 text-gray-500 transition-colors group-hover:text-yellow-400" />
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-gray-400 text-lg font-medium">Drop your image here</p>
+                        <p className="text-gray-500 text-sm">or paste from clipboard</p>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleFileSelect(e, 'model')}
+                        id="model-upload"
+                      />
+                      <Button 
+                        asChild 
+                        variant="outline"
+                        className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                      >
+                        <label htmlFor="model-upload">Choose File</label>
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="space-y-6 text-center">
-                  <Upload className="w-16 h-16 mx-auto text-gray-500 transition-colors group-hover:text-yellow-400" />
-                  <p className="text-gray-400 text-lg">Drag and drop, paste, or click to upload</p>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => handleFileSelect(e, 'model')}
-                    id="model-upload"
-                  />
-                  <Button 
-                    asChild 
-                    variant="outline"
-                    className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+              </Card>
+
+              {/* Garment Upload Box */}
+              <Card className="p-6 bg-gray-900/50 border-gray-800">
+                <h2 className="text-2xl font-semibold mb-4">Upload Garment</h2>
+                <div className="space-y-4">
+                  {/* Upload Area */}
+                  <div
+                    id="garment-box"
+                    className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center cursor-pointer transition-all duration-300 hover:border-yellow-400 relative group"
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => handleDrop(e, 'garment')}
+                    tabIndex={0}
                   >
-                    <label htmlFor="model-upload">Choose File</label>
-                  </Button>
-                </div>
-              )}
-            </div>
-          </Card>
-
-          {/* Garment Upload Box */}
-          <Card className="p-6 bg-gray-900/50 border-gray-800">
-            <div className="space-y-6">
-              <h2 className="text-2xl font-semibold">Upload Garment</h2>
-              
-              {/* Category Selection */}
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className={`flex-1 py-6 ${category === 'tops' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
-                  onClick={() => setCategory('tops')}
-                >
-                  <TopSvg className={`w-5 h-5 mr-2 ${category === 'tops' ? 'text-black' : 'text-white'}`} />
-                  Top
-                </Button>
-                <Button
-                  variant="outline"
-                  className={`flex-1 py-6 ${category === 'bottoms' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
-                  onClick={() => setCategory('bottoms')}
-                >
-                  <BottomSvg className={`w-5 h-5 mr-2 ${category === 'bottoms' ? 'text-black' : 'text-white'}`} />
-                  Bottom
-                </Button>
-                <Button
-                  variant="outline"
-                  className={`flex-1 py-6 ${category === 'one-pieces' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
-                  onClick={() => setCategory('one-pieces')}
-                >
-                  <FullbodySvg className={`w-5 h-5 mr-2 ${category === 'one-pieces' ? 'text-black' : 'text-white'}`} />
-                  Full Body
-                </Button>
-              </div>
-
-              {/* Upload Area */}
-              <div
-                id="garment-box"
-                className="border-2 border-dashed border-gray-700 rounded-lg p-12 text-center cursor-pointer transition-colors hover:border-yellow-400"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => handleDrop(e, 'garment')}
-                tabIndex={0}
-              >
-                {garmentPreview ? (
-                  <div className="relative h-64 w-full">
-                    <Image
-                      src={garmentPreview}
-                      alt="Garment preview"
-                      fill
-                      className="object-contain"
-                      unoptimized
-                    />
+                    {garmentPreview ? (
+                      <div className="relative h-[400px] w-full group">
+                        <Image
+                          src={garmentPreview}
+                          alt="Garment preview"
+                          fill
+                          className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-50"
+                          unoptimized
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <div className="bg-black/80 p-4 rounded-lg flex flex-col items-center gap-2">
+                            <p className="text-sm text-gray-300">Click or drag to replace</p>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => handleFileSelect(e, 'garment')}
+                              id="garment-upload"
+                            />
+                            <Button 
+                              asChild 
+                              variant="outline"
+                              size="sm"
+                              className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                            >
+                              <label htmlFor="garment-upload">Replace Image</label>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-[400px]">
+                        <div className="w-16 h-16 rounded-full bg-gray-900/50 flex items-center justify-center transition-transform group-hover:scale-110 duration-300">
+                          <ImageIcon className="w-8 h-8 text-gray-600 transition-colors group-hover:text-yellow-400" />
+                        </div>
+                        <div className="mt-4 space-y-2">
+                          <p className="text-gray-400 text-lg font-medium">Drop your garment here</p>
+                          <p className="text-gray-500 text-sm">or paste from clipboard</p>
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleFileSelect(e, 'garment')}
+                          id="garment-upload"
+                        />
+                        <Button 
+                          asChild 
+                          variant="outline"
+                          className="mt-4 transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                        >
+                          <label htmlFor="garment-upload">Choose File</label>
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    <ImageIcon className="w-16 h-16 mx-auto text-gray-600" />
-                    <p className="text-gray-400 text-lg">Drag and drop, paste, or click to upload</p>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => handleFileSelect(e, 'garment')}
-                      id="garment-upload"
-                    />
-                    <Button 
-                      asChild 
+
+                  {/* Garment Type Buttons */}
+                  <div className="flex gap-2">
+                    <Button
                       variant="outline"
-                      className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                      size="sm"
+                      className={`flex-1 py-3 ${category === 'tops' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                      onClick={() => setCategory('tops')}
                     >
-                      <label htmlFor="garment-upload">Choose File</label>
+                      <TopSvg className={`w-4 h-4 mr-2 ${category === 'tops' ? 'text-black' : 'text-white'}`} />
+                      Top
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={`flex-1 py-3 ${category === 'bottoms' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                      onClick={() => setCategory('bottoms')}
+                    >
+                      <BottomSvg className={`w-4 h-4 mr-2 ${category === 'bottoms' ? 'text-black' : 'text-white'}`} />
+                      Bottom
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={`flex-1 py-3 ${category === 'one-pieces' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                      onClick={() => setCategory('one-pieces')}
+                    >
+                      <FullbodySvg className={`w-4 h-4 mr-2 ${category === 'one-pieces' ? 'text-black' : 'text-white'}`} />
+                      Full Body
                     </Button>
                   </div>
-                )}
-              </div>
-
-              {/* Generation Settings */}
-              <div className="space-y-2">
-                <label className="text-sm text-gray-400">Quality</label>
-                <Select value={mode} onValueChange={(value: 'performance' | 'balanced' | 'quality') => setMode(value)}>
-                  <SelectTrigger className="w-full transition-all duration-300 data-[state=open]:bg-yellow-400 data-[state=open]:text-black">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="performance" className="hover:bg-yellow-400 hover:text-black">Fast</SelectItem>
-                    <SelectItem value="balanced" className="hover:bg-yellow-400 hover:text-black">Balanced</SelectItem>
-                    <SelectItem value="quality" className="hover:bg-yellow-400 hover:text-black">Quality</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </Card>
-
-          {/* Updated Result Box */}
-          <Card className="p-6 bg-gray-900/50 border-gray-800">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold">Result</h2>
-              {result && !isProcessing && (
-                <Button
-                  variant="outline"
-                  className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
-                  onClick={handleDownload}
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download
-                </Button>
-              )}
-            </div>
-            <div className="border-2 border-gray-700 rounded-lg p-8 h-[400px]">
-              {isProcessing ? (
-                <ProcessingStatus status={processingStatus} />
-              ) : result ? (
-                <div className="relative h-full">
-                  <Image
-                    src={result}
-                    alt="Result preview"
-                    fill
-                    className="object-contain rounded-lg"
-                    unoptimized
-                  />
                 </div>
-              ) : (
-                <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-4">
-                  <ImageIcon className="w-16 h-16 opacity-20" />
-                  <p className="text-lg">Your result will appear here</p>
-                </div>
-              )}
-            </div>
-            <div className="mt-4 text-sm text-gray-500 text-center">
-              Estimated time: {QUALITY_TIMES[mode]}
-            </div>
-          </Card>
-        </div>
+              </Card>
 
-        <div className="mt-6 flex justify-center">
-          <Button
-            onClick={processImages}
-            disabled={!modelImage || !garmentImage || isProcessing}
-            className="bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50"
-          >
-            {isProcessing ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              'Generate Try-on'
-            )}
-          </Button>
+              {/* Updated Result Box */}
+              <Card className="p-6 bg-gray-900/50 border-gray-800">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-semibold">Result</h2>
+                  {result && !isProcessing && (
+                    <Button
+                      variant="outline"
+                      className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                      onClick={handleDownload}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download
+                    </Button>
+                  )}
+                </div>
+                <div className="border-2 border-gray-700 rounded-lg p-6 h-[500px]">
+                  {isProcessing ? (
+                    <ProcessingStatus status={processingStatus} />
+                  ) : result ? (
+                    <div className="relative h-full w-full flex items-center justify-center">
+                      <Image
+                        src={result}
+                        alt="Result preview"
+                        fill
+                        className="object-contain rounded-lg"
+                        unoptimized
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-4">
+                      <ImageIcon className="w-16 h-16 opacity-20" />
+                      <p className="text-lg">Your result will appear here</p>
+                    </div>
+                  )}
+                </div>
+                <div className="mt-6 flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`flex-1 py-3 ${mode === 'performance' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                    onClick={() => setMode('performance')}
+                  >
+                    <Zap className="w-4 h-4 mr-2" />
+                    Performance
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`flex-1 py-3 ${mode === 'balanced' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                    onClick={() => setMode('balanced')}
+                  >
+                    <Scale className="w-4 h-4 mr-2" />
+                    Balanced
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`flex-1 py-3 ${mode === 'quality' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                    onClick={() => setMode('quality')}
+                  >
+                    <Diamond className="w-4 h-4 mr-2" />
+                    Quality
+                  </Button>
+                </div>
+                <div className="mt-4">
+                  {result && !isProcessing ? (
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => {
+                          setModelImage(null);
+                          setGarmentImage(null);
+                          setModelPreview(null);
+                          setGarmentPreview(null);
+                          setResult(null);
+                          setProcessingStatus('');
+                        }}
+                        variant="outline"
+                        className="flex-1 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black py-6"
+                      >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Generate New
+                      </Button>
+                      <Button
+                        onClick={processImages}
+                        disabled={!modelImage || !garmentImage || isProcessing}
+                        className="flex-1 bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 py-6"
+                      >
+                        <Play className="w-4 h-4 mr-2" />
+                        Run (~{QUALITY_TIMES[mode]})
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      onClick={processImages}
+                      disabled={!modelImage || !garmentImage || isProcessing}
+                      className="w-full bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 py-6"
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-4 h-4 mr-2" />
+                          Run (~{QUALITY_TIMES[mode]})
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            </div>
+          </div>
+          <Footer />
         </div>
-      </div>
-      <Footer />
+      </main>
     </div>
   );
 }

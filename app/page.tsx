@@ -8,14 +8,36 @@ import VariableProximity from "@/components/ui/variable-proximity";
 import { useRef } from 'react';
 import { Logo } from './components/Logo';
 import { Footer } from './components/Footer';
+import { AuthButtons } from '@/components/auth/auth-buttons';
+import { useAuth } from '@/contexts/auth-context';
 
 export default function HomePage() {
   const descriptionRef = useRef<HTMLDivElement>(null);
+  const { user, signOut } = useAuth();
 
   return (
     <div className="h-screen bg-black text-white flex flex-col">
       <nav className="container flex justify-between items-center h-16 px-6">
         <Logo />
+        <div className="flex items-center gap-4">
+          {user ? (
+            <div className="flex items-center gap-4">
+              <Link href="/my-generations">
+                <InteractiveHoverButton className="px-8 py-2 text-sm flex items-center gap-2 min-w-[160px] whitespace-nowrap">
+                  My Generations
+                </InteractiveHoverButton>
+              </Link>
+              <button
+                onClick={signOut}
+                className="text-gray-400 hover:text-gray-300 text-sm"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <AuthButtons />
+          )}
+        </div>
       </nav>
 
       <main className="flex-1 flex flex-col items-center justify-center">
@@ -25,7 +47,6 @@ export default function HomePage() {
               Virtual Try-On
               <div className="text-yellow-400 flex items-center justify-center gap-2 mt-4">
                 <AuroraText className="text-6xl">Reimagined</AuroraText>
-                <Sparkles className="w-8 h-8" />
               </div>
             </h1>
             
@@ -37,7 +58,7 @@ export default function HomePage() {
           </div>
 
           <Link href="/studio" className="inline-block">
-            <InteractiveHoverButton className="px-8 py-3 text-sm">
+            <InteractiveHoverButton className="px-8 py-2 text-sm flex items-center gap-2 min-w-[200px] whitespace-nowrap">
               Enter Studio
             </InteractiveHoverButton>
           </Link>
