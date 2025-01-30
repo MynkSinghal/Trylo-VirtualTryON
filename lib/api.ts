@@ -71,6 +71,7 @@ export async function generateTryOn({
         garment_image: garmentBase64,
         category: category.toLowerCase(),
         mode: mode.toLowerCase(),
+        restore_background: true,
         num_samples: numSamples
       })
     });
