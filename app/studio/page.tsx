@@ -4,12 +4,17 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Sparkles, Upload,
   Image as ImageIcon, 
   Loader2,
   Download,
+  Zap,
+  Scale,
+  Diamond,
+  Play,
 } from 'lucide-react';
 import Image from 'next/image';
 import { generateTryOn, type Category } from '@/lib/api';
@@ -22,9 +27,9 @@ import { Footer } from '../components/Footer';
 import { Logo } from '../components/Logo';
 
 const QUALITY_TIMES = {
-  performance: '~9sec',
-  balanced: '~15sec',
-  quality: '~20sec'
+  performance: '9sec',
+  balanced: '15sec',
+  quality: '20sec'
 } as const;
 
 export default function StudioPage() {
@@ -172,25 +177,50 @@ export default function StudioPage() {
             <h2 className="text-2xl font-semibold mb-4">Upload Model Photo</h2>
             <div
               id="model-box"
-              className="border-2 border-dashed border-gray-700 rounded-lg p-12 h-[400px] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:border-yellow-400 hover:bg-gray-900/30"
+              className="border-2 border-dashed border-gray-500 rounded-lg p-6 h-[500px] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:border-yellow-400 hover:bg-gray-700/30 relative group"
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => handleDrop(e, 'model')}
               tabIndex={0}
             >
               {modelPreview ? (
-                <div className="relative h-full w-full">
+                <div className="relative h-full w-full group flex items-center justify-center">
                   <Image
                     src={modelPreview}
                     alt="Model preview"
                     fill
-                    className="object-contain"
+                    className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-50"
                     unoptimized
                   />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <div className="bg-black/80 p-4 rounded-lg flex flex-col items-center gap-2">
+                      <p className="text-sm text-gray-300">Click or drag to replace</p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleFileSelect(e, 'model')}
+                        id="model-upload"
+                      />
+                      <Button 
+                        asChild 
+                        variant="outline"
+                        size="sm"
+                        className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                      >
+                        <label htmlFor="model-upload">Replace Image</label>
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-6 text-center">
-                  <Upload className="w-16 h-16 mx-auto text-gray-500 transition-colors group-hover:text-yellow-400" />
-                  <p className="text-gray-400 text-lg">Drag and drop, paste, or click to upload</p>
+                  <div className="w-20 h-20 mx-auto rounded-full bg-gray-900/50 flex items-center justify-center transition-transform group-hover:scale-110 duration-300">
+                    <Upload className="w-10 h-10 text-gray-500 transition-colors group-hover:text-yellow-400" />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-gray-400 text-lg font-medium">Drop your image here</p>
+                    <p className="text-gray-500 text-sm">or paste from clipboard</p>
+                  </div>
                   <input
                     type="file"
                     accept="image/*"
@@ -212,59 +242,55 @@ export default function StudioPage() {
 
           {/* Garment Upload Box */}
           <Card className="p-6 bg-gray-900/50 border-gray-800">
-            <div className="space-y-6">
-              <h2 className="text-2xl font-semibold">Upload Garment</h2>
-              
-              {/* Category Selection */}
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className={`flex-1 py-6 ${category === 'tops' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
-                  onClick={() => setCategory('tops')}
-                >
-                  <TopSvg className={`w-5 h-5 mr-2 ${category === 'tops' ? 'text-black' : 'text-white'}`} />
-                  Top
-                </Button>
-                <Button
-                  variant="outline"
-                  className={`flex-1 py-6 ${category === 'bottoms' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
-                  onClick={() => setCategory('bottoms')}
-                >
-                  <BottomSvg className={`w-5 h-5 mr-2 ${category === 'bottoms' ? 'text-black' : 'text-white'}`} />
-                  Bottom
-                </Button>
-                <Button
-                  variant="outline"
-                  className={`flex-1 py-6 ${category === 'one-pieces' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
-                  onClick={() => setCategory('one-pieces')}
-                >
-                  <FullbodySvg className={`w-5 h-5 mr-2 ${category === 'one-pieces' ? 'text-black' : 'text-white'}`} />
-                  Full Body
-                </Button>
-              </div>
-
+            <h2 className="text-2xl font-semibold mb-4">Upload Garment</h2>
+            <div className="space-y-4">
               {/* Upload Area */}
               <div
                 id="garment-box"
-                className="border-2 border-dashed border-gray-700 rounded-lg p-12 text-center cursor-pointer transition-colors hover:border-yellow-400"
+                className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center cursor-pointer transition-all duration-300 hover:border-yellow-400 relative group"
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => handleDrop(e, 'garment')}
                 tabIndex={0}
               >
                 {garmentPreview ? (
-                  <div className="relative h-64 w-full">
+                  <div className="relative h-[400px] w-full group">
                     <Image
                       src={garmentPreview}
                       alt="Garment preview"
                       fill
-                      className="object-contain"
+                      className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-50"
                       unoptimized
                     />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <div className="bg-black/80 p-4 rounded-lg flex flex-col items-center gap-2">
+                        <p className="text-sm text-gray-300">Click or drag to replace</p>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleFileSelect(e, 'garment')}
+                          id="garment-upload"
+                        />
+                        <Button 
+                          asChild 
+                          variant="outline"
+                          size="sm"
+                          className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                        >
+                          <label htmlFor="garment-upload">Replace Image</label>
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    <ImageIcon className="w-16 h-16 mx-auto text-gray-600" />
-                    <p className="text-gray-400 text-lg">Drag and drop, paste, or click to upload</p>
+                  <div className="flex flex-col items-center justify-center h-[400px]">
+                    <div className="w-16 h-16 rounded-full bg-gray-900/50 flex items-center justify-center transition-transform group-hover:scale-110 duration-300">
+                      <ImageIcon className="w-8 h-8 text-gray-600 transition-colors group-hover:text-yellow-400" />
+                    </div>
+                    <div className="mt-4 space-y-2">
+                      <p className="text-gray-400 text-lg font-medium">Drop your garment here</p>
+                      <p className="text-gray-500 text-sm">or paste from clipboard</p>
+                    </div>
                     <input
                       type="file"
                       accept="image/*"
@@ -275,7 +301,7 @@ export default function StudioPage() {
                     <Button 
                       asChild 
                       variant="outline"
-                      className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                      className="mt-4 transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
                     >
                       <label htmlFor="garment-upload">Choose File</label>
                     </Button>
@@ -283,19 +309,35 @@ export default function StudioPage() {
                 )}
               </div>
 
-              {/* Generation Settings */}
-              <div className="space-y-2">
-                <label className="text-sm text-gray-400">Quality</label>
-                <Select value={mode} onValueChange={(value: 'performance' | 'balanced' | 'quality') => setMode(value)}>
-                  <SelectTrigger className="w-full transition-all duration-300 data-[state=open]:bg-yellow-400 data-[state=open]:text-black">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="performance" className="hover:bg-yellow-400 hover:text-black">Fast</SelectItem>
-                    <SelectItem value="balanced" className="hover:bg-yellow-400 hover:text-black">Balanced</SelectItem>
-                    <SelectItem value="quality" className="hover:bg-yellow-400 hover:text-black">Quality</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Garment Type Buttons */}
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`flex-1 py-3 ${category === 'tops' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                  onClick={() => setCategory('tops')}
+                >
+                  <TopSvg className={`w-4 h-4 mr-2 ${category === 'tops' ? 'text-black' : 'text-white'}`} />
+                  Top
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`flex-1 py-3 ${category === 'bottoms' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                  onClick={() => setCategory('bottoms')}
+                >
+                  <BottomSvg className={`w-4 h-4 mr-2 ${category === 'bottoms' ? 'text-black' : 'text-white'}`} />
+                  Bottom
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`flex-1 py-3 ${category === 'one-pieces' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                  onClick={() => setCategory('one-pieces')}
+                >
+                  <FullbodySvg className={`w-4 h-4 mr-2 ${category === 'one-pieces' ? 'text-black' : 'text-white'}`} />
+                  Full Body
+                </Button>
               </div>
             </div>
           </Card>
@@ -315,11 +357,11 @@ export default function StudioPage() {
                 </Button>
               )}
             </div>
-            <div className="border-2 border-gray-700 rounded-lg p-8 h-[400px]">
+            <div className="border-2 border-gray-700 rounded-lg p-6 h-[500px]">
               {isProcessing ? (
                 <ProcessingStatus status={processingStatus} />
               ) : result ? (
-                <div className="relative h-full">
+                <div className="relative h-full w-full flex items-center justify-center">
                   <Image
                     src={result}
                     alt="Result preview"
@@ -335,27 +377,108 @@ export default function StudioPage() {
                 </div>
               )}
             </div>
-            <div className="mt-4 text-sm text-gray-500 text-center">
-              Estimated time: {QUALITY_TIMES[mode]}
+            <div className="mt-6 flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className={`flex-1 py-3 ${mode === 'performance' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                onClick={() => setMode('performance')}
+              >
+                <Zap className="w-4 h-4 mr-2" />
+                Performance
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className={`flex-1 py-3 ${mode === 'balanced' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                onClick={() => setMode('balanced')}
+              >
+                <Scale className="w-4 h-4 mr-2" />
+                Balanced
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className={`flex-1 py-3 ${mode === 'quality' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                onClick={() => setMode('quality')}
+              >
+                <Diamond className="w-4 h-4 mr-2" />
+                Quality
+              </Button>
+            </div>
+            <div className="mt-4">
+              {result && !isProcessing ? (
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => {
+                      setModelImage(null);
+                      setGarmentImage(null);
+                      setModelPreview(null);
+                      setGarmentPreview(null);
+                      setResult(null);
+                      setProcessingStatus('');
+                    }}
+                    variant="outline"
+                    className="flex-1 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black py-6"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Generate New
+                  </Button>
+                  <Button
+                    onClick={processImages}
+                    disabled={!modelImage || !garmentImage || isProcessing}
+                    className="flex-1 bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 py-6"
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    Run (~{QUALITY_TIMES[mode]})
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={processImages}
+                  disabled={!modelImage || !garmentImage || isProcessing}
+                  className="w-full bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 py-6"
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4 mr-2" />
+                      Run (~{QUALITY_TIMES[mode]})
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </Card>
         </div>
 
-        <div className="mt-6 flex justify-center">
-          <Button
-            onClick={processImages}
-            disabled={!modelImage || !garmentImage || isProcessing}
-            className="bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50"
-          >
-            {isProcessing ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              'Generate Try-on'
-            )}
-          </Button>
+        {/* Action Buttons */}
+        <div className="mt-6 bg-gray-900/50 border border-gray-800 rounded-lg p-4">
+          <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex gap-4">
+              {result && !isProcessing && (
+                <Button
+                  onClick={() => {
+                    setModelImage(null);
+                    setGarmentImage(null);
+                    setModelPreview(null);
+                    setGarmentPreview(null);
+                    setResult(null);
+                    setProcessingStatus('');
+                  }}
+                  variant="outline"
+                  className="border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate New
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
       <Footer />

@@ -62,6 +62,7 @@ export async function generateTryOn({
         category,
         mode,
         num_samples: numSamples,
+        restore_background: true,
       }),
     });
 
