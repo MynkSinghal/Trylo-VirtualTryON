@@ -2,72 +2,88 @@
 
 Trylo is a modern web application that lets users virtually try on clothes using AI technology. Built with Next.js 14 and powered by cutting-edge AI models, it provides a seamless and interactive virtual try-on experience.
 
-## Features
+![Trylo](public/TryloImage.png)
+## ✨ Features
 
-- **Virtual Try-On**: Upload your photo and try on any garment instantly
-- **Multiple Categories**: Support for tops, bottoms, and full-body garments
-- **Quality Settings**: Choose between performance, balanced, and quality modes
-- **Interactive UI**: Modern, responsive design with smooth animations
-- **Drag & Drop**: Easy image upload with drag and drop support
-- **Clipboard Support**: Paste images directly from clipboard
-- **Download Results**: Save and download your try-on results
+### Current Features
+- **Virtual Try-On Technology**: Upload your photo and try on any garment instantly
+- **Multiple Garment Categories**: 
+  - Tops
+  - Bottoms
+  - Full-body garments
+- **Quality Settings**:
+  - Fast Mode (~9 seconds)
+  - Balanced Mode (~15 seconds)
+  - Quality Mode (~20 seconds)
+- **Smart Background Preservation**: Maintains original photo backgrounds
+- **Interactive UI**:
+  - Modern, responsive design
+  - Smooth animations and transitions
+  - Real-time processing status updates
+- **User Management**:
+  - Personal generation history
+  - Secure authentication
+- **Image Handling**:
+  - Drag & drop support
+  - Clipboard paste functionality
+  - Multiple file upload methods
 
-## Tech Stack
+  
 
-- **Framework**: Next.js 14 with App Router
-- **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui
-- **Animations**: Magic UI components
-- **Icons**: Lucide React & Custom SVGs
-- **State Management**: React Hooks
-- **Image Processing**: Next.js Image Component
-- **Development**: TypeScript
+### Roadmap
+- [ ] Mobile app development
+- [ ] Batch processing for multiple garments
+- [ ] AR integration for real-time try-on
+- [ ] Social sharing features
+- [ ] Integration with e-commerce platforms
+- [ ] Custom background options
 
-## Getting Started
+## 🛠 Tech Stack
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/trylo.git
-cd trylo
+- **Frontend Framework**: Next.js 14 (App Router)
+- **Authentication**: NextAuth.js
+- **Database**: Supabase
+- **Storage**: Supabase Storage
+- **Styling**: 
+  - Tailwind CSS
+  - shadcn/ui components
+- **State Management**: React Context + Hooks
+- **API Integration**: FASHN AI API
+- **Development**:
+  - TypeScript
+  - ESLint
+  - Prettier
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18.x or higher
+- npm/yarn
+- Supabase account
+
+### Environment Setup
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
 ```
 
-2. Install dependencies:
-```bash
-npm install
-```
 
-3. Run the development server:
+### Running the App
+
 ```bash
 npm run dev
 ```
+## 📄 License
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+All rights reserved. See `LICENSE` for more information.
 
-## Usage
+## 👥 Team
 
-1. Click "Enter Studio" on the homepage
-2. Upload a model photo (person wearing neutral clothing)
-3. Select a garment category (top, bottom, or full body)
-4. Upload a garment image
-5. Choose your preferred quality setting
-6. Click "Generate Try-on" to see the result
-7. Download the generated image if desired
+- **Mayank Singhal** - _Initial work_ - [@MynkSinghal](https://github.com/MynkSinghal)
 
-## Performance Settings
+## 📞 Contact
 
-- **Fast Mode**: ~9 seconds processing time
-- **Balanced Mode**: ~15 seconds processing time
-- **Quality Mode**: ~20 seconds processing time
-
-## Contact
-
-Built by [Mayank Singhal](https://www.linkedin.com/in/mynkkkk/)
-
-- GitHub: [@MynkSinghal](https://github.com/MynkSinghal)
-- LinkedIn: [@mynkkkk](https://www.linkedin.com/in/mynkkkk/)
 - Email: singhal2004mayank@gmail.com
-- Phone: +91 8448039908
-
-## License
-
-All rights reserved. 
+- LinkedIn: [@mynkkkk](https://www.linkedin.com/in/mynkkkk/)
+- GitHub: [@MynkSinghal](https://github.com/MynkSinghal)
