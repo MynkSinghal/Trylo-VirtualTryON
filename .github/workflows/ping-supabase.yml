@@ -1,28 +1,59 @@
-name: Ping Supabase to Prevent Pausing
+name: Ping Supabase Database
+
 on:
-  
-  workflow_dispatch: # Add this for manual triggering
+  # Run once to start the cycle
+  workflow_dispatch:
+  # Schedule to run every 3 days
   schedule:
-    - cron: '0 9 * * 1,4' # Runs every Monday and Thursday at 9:00 AM UTC
+    - cron: '0 0 */3 * *'  # At 00:00 UTC every 3 days
+
 jobs:
-  ping:
+  ping-database:
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Set up Node.js
+      
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install Supabase Client
-        run: npm install @supabase/supabase-js --force
-      - name: Ping Supabase
-        env:
-          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.NEXT_SERVICE_ROLE_KEY }}
+      
+      - name: Install dependencies
+        run: npm install @supabase/supabase-js
+      
+      - name: Ping Supabase database
         run: |
           node -e "
-          const { createClient } = require('@supabase/supabase-js');
-          const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
-          supabase.from('generations').select('*').limit(10);
+            const { createClient } = require('@supabase/supabase-js');
+            
+            // Initialize Supabase client
+            const supabaseUrl = '${{ secrets.SUPABASE_URL }}';
+            const supabaseKey = '${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}';
+            const supabase = createClient(supabaseUrl, supabaseKey);
+            
+            async function pingDatabase() {
+              try {
+                // Simple query to check connection
+                const { data, error } = await supabase.from('ping_log').insert([
+                  { pinged_at: new Date().toISOString() }
+                ]);
+                
+                if (error) {
+                  console.error('Error pinging database:', error);
+                  process.exit(1);
+                }
+                
+                console.log('Successfully pinged database at', new Date().toISOString());
+              } catch (error) {
+                console.error('Exception while pinging database:', error);
+                process.exit(1);
+              }
+            }
+            
+            pingDatabase();
           "
+      
+      - name: Log ping status
+        run: echo "Supabase ping completed at $(date)"
