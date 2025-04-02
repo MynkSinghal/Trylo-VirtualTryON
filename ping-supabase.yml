@@ -22,5 +22,5 @@ jobs:
           node -e "
           const { createClient } = require('@supabase/supabase-js');
           const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
-          supabase.from('your_table').select('*').limit(10);
+          supabase.from('generations').select('*').limit(10);
           "
