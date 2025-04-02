@@ -1,5 +1,7 @@
 name: Ping Supabase to Prevent Pausing
 on:
+  
+  workflow_dispatch: # Add this for manual triggering
   schedule:
     - cron: '0 9 * * 1,4' # Runs every Monday and Thursday at 9:00 AM UTC
 jobs:
