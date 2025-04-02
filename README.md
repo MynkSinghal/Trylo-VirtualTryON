@@ -1,3 +1,5 @@
+[![Ping Supabase Database](https://github.com/MynkSinghal/Trylo-VirtualTryON/actions/workflows/ping-supabase.yml/badge.svg)](https://github.com/MynkSinghal/Trylo-VirtualTryON/actions/workflows/ping-supabase.yml)
+
 # Trylo - AI-Powered Virtual Try-On Platform
 
 Trylo is a modern web application that lets users virtually try on clothes using AI technology. Built with Next.js 14 and powered by cutting-edge AI models, it provides a seamless and interactive virtual try-on experience.
