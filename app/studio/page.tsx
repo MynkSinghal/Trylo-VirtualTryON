@@ -16,6 +16,7 @@ import {
   Scale,
   Diamond,
   Play,
+  Store,
 } from 'lucide-react';
 import Image from 'next/image';
 import { generateTryOn, type Category } from '@/lib/api';
@@ -35,12 +36,20 @@ const QUALITY_TIMES = {
   quality: '20sec'
 } as const;
 
+// Helper function to convert base64 to File
+const base64ToFile = async (url: string, filename: string): Promise<File> => {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  return new File([blob], filename, { type: blob.type });
+};
+
 export default function StudioPage() {
   const { toast } = useToast();
   const [modelImage, setModelImage] = useState<File | null>(null);
   const [garmentImage, setGarmentImage] = useState<File | null>(null);
   const [modelPreview, setModelPreview] = useState<string | null>(null);
   const [garmentPreview, setGarmentPreview] = useState<string | null>(null);
+  const [garmentName, setGarmentName] = useState<string | null>(null);
   const [category, setCategory] = useState<Category>('tops');
   const [mode, setMode] = useState<'performance' | 'balanced' | 'quality'>('balanced');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -48,6 +57,61 @@ export default function StudioPage() {
   const [result, setResult] = useState<string | null>(null);
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+
+  // Handle selected garment from library
+  useEffect(() => {
+    const checkForSelectedGarment = async () => {
+      const selectedGarmentPath = localStorage.getItem('selectedGarmentPath');
+      const selectedGarmentName = localStorage.getItem('selectedGarmentName');
+      
+      if (selectedGarmentPath) {
+        try {
+          // Fetch the selected garment image from the public folder
+          const response = await fetch(selectedGarmentPath);
+          if (!response.ok) throw new Error('Failed to fetch garment image');
+          
+          const blob = await response.blob();
+          
+          // Create a File object from the blob
+          const filename = selectedGarmentPath.split('/').pop() || 'garment.jpg';
+          const file = new File([blob], filename, { type: blob.type || 'image/jpeg' });
+          
+          // Set garment image and preview
+          setGarmentImage(file);
+          setGarmentPreview(URL.createObjectURL(blob));
+          
+          // Set the garment name if available
+          if (selectedGarmentName) {
+            setGarmentName(selectedGarmentName);
+          }
+          
+          // Clear the localStorage entries
+          localStorage.removeItem('selectedGarmentPath');
+          localStorage.removeItem('selectedGarmentName');
+          
+          // Show success toast
+          toast({
+            title: "Garment Selected",
+            description: `${selectedGarmentName || 'Garment'} from library has been loaded`,
+            variant: "default"
+          });
+        } catch (error) {
+          console.error("Error loading garment from library:", error);
+          toast({
+            title: "Error",
+            description: "Failed to load garment from library",
+            variant: "destructive"
+          });
+          
+          // Clear the localStorage entries
+          localStorage.removeItem('selectedGarmentPath');
+          localStorage.removeItem('selectedGarmentName');
+        }
+      }
+    };
+    
+    checkForSelectedGarment();
+  }, [toast]);
 
   const handleDrop = async (e: React.DragEvent, type: 'model' | 'garment') => {
     e.preventDefault();
@@ -104,6 +168,7 @@ export default function StudioPage() {
       } else {
         setGarmentImage(file);
         setGarmentPreview(preview);
+        setGarmentName(null); // Reset garment name when uploading a new image
       }
     };
     reader.readAsDataURL(file);
@@ -284,24 +349,42 @@ export default function StudioPage() {
                           className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-50"
                           unoptimized
                         />
+                        {garmentName && (
+                          <div className="absolute top-0 left-0 right-0 bg-black/70 text-center py-2 px-4">
+                            <p className="text-sm font-medium">{garmentName}</p>
+                          </div>
+                        )}
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                           <div className="bg-black/80 p-4 rounded-lg flex flex-col items-center gap-2">
                             <p className="text-sm text-gray-300">Click or drag to replace</p>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={(e) => handleFileSelect(e, 'garment')}
-                              id="garment-upload"
-                            />
-                            <Button 
-                              asChild 
-                              variant="outline"
-                              size="sm"
-                              className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
-                            >
-                              <label htmlFor="garment-upload">Replace Image</label>
-                            </Button>
+                            <div className="flex gap-2 mt-2">
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => handleFileSelect(e, 'garment')}
+                                id="garment-upload"
+                              />
+                              <Button 
+                                asChild 
+                                variant="outline"
+                                size="sm"
+                                className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                              >
+                                <label htmlFor="garment-upload">Replace Image</label>
+                              </Button>
+                              
+                              <Link href="/garment-library">
+                                <Button 
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                                >
+                                  <Store className="w-4 h-4" />
+                                  Browse Library
+                                </Button>
+                              </Link>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -314,20 +397,32 @@ export default function StudioPage() {
                           <p className="text-gray-400 text-lg font-medium">Drop your garment here</p>
                           <p className="text-gray-500 text-sm">or paste from clipboard</p>
                         </div>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleFileSelect(e, 'garment')}
-                          id="garment-upload"
-                        />
-                        <Button 
-                          asChild 
-                          variant="outline"
-                          className="mt-4 transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
-                        >
-                          <label htmlFor="garment-upload">Choose File</label>
-                        </Button>
+                        <div className="flex gap-2 mt-4">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleFileSelect(e, 'garment')}
+                            id="garment-upload"
+                          />
+                          <Button 
+                            asChild 
+                            variant="outline"
+                            className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                          >
+                            <label htmlFor="garment-upload">Choose File</label>
+                          </Button>
+                          
+                          <Link href="/garment-library">
+                            <Button 
+                              variant="outline"
+                              className="flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                            >
+                              <Store className="w-4 h-4" />
+                              Browse Library
+                            </Button>
+                          </Link>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -438,6 +533,7 @@ export default function StudioPage() {
                           setGarmentImage(null);
                           setModelPreview(null);
                           setGarmentPreview(null);
+                          setGarmentName(null);
                           setResult(null);
                           setProcessingStatus('');
                         }}
