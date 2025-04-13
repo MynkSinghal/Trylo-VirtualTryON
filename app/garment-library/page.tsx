@@ -26,62 +26,67 @@ const garmentData = {
   male: {
     shirts: [
       { id: 1, name: 'Blue Formal Shirt', image: '/garments/male/shirts/blue-formal.jpg' },
-      { id: 2, name: 'White Casual Shirt', image: '/garments/male/shirts/white-casual.jpg' },
-      { id: 3, name: 'Black Dress Shirt', image: '/garments/male/shirts/black-dress.jpg' },
+      { id: 2, name: 'White Casual Shirt', image: '/garments/male/shirts/white-casual.png' },
+      { id: 3, name: 'Black Dress Shirt', image: '/garments/male/shirts/black-dress.png' },
     ],
     tshirts: [
-      { id: 4, name: 'Red Graphic Tee', image: '/garments/male/tshirts/red-graphic.jpg' },
-      { id: 5, name: 'Navy Basic Tee', image: '/garments/male/tshirts/navy-basic.jpg' },
-      { id: 6, name: 'Striped Tee', image: '/garments/male/tshirts/striped.jpg' },
+      { id: 4, name: 'Red Graphic Tee', image: '/garments/male/tshirts/red-graphic.png' },
+      { id: 5, name: 'Navy Basic Tee', image: '/garments/male/tshirts/navy-basic.png' },
+      { id: 6, name: 'Striped Tee', image: '/garments/male/tshirts/striped.png' },
     ],
     pants: [
-      { id: 7, name: 'Khaki Chinos', image: '/garments/male/pants/khaki-chinos.jpg' },
-      { id: 8, name: 'Blue Jeans', image: '/garments/male/pants/blue-jeans.jpg' },
-      { id: 9, name: 'Black Dress Pants', image: '/garments/male/pants/black-dress.jpg' },
+      { id: 7, name: 'Khaki Chinos', image: '/garments/male/pants/khaki-chinos.png' },
+      { id: 8, name: 'Blue Jeans', image: '/garments/male/pants/blue-jeans.png' },
+      { id: 9, name: 'Black Dress Pants', image: '/garments/male/pants/black-dress.png' },
     ],
     coats: [
-      { id: 10, name: 'Winter Coat', image: '/garments/male/coats/winter-coat.jpg' },
-      { id: 11, name: 'Leather Jacket', image: '/garments/male/coats/leather-jacket.jpg' },
-      { id: 12, name: 'Blazer', image: '/garments/male/coats/blazer.jpg' },
+      { id: 10, name: 'Winter Coat', image: '/garments/male/coats/winter-coat.png' },
+      { id: 11, name: 'Leather Jacket', image: '/garments/male/coats/leather-jacket.png' },
+      { id: 12, name: 'Blazer', image: '/garments/male/coats/blazer.png' },
     ],
     kurtas: [
-      { id: 13, name: 'Embroidered Kurta', image: '/garments/male/kurtas/embroidered.jpg' },
-      { id: 14, name: 'Simple White Kurta', image: '/garments/male/kurtas/white.jpg' },
-      { id: 15, name: 'Wedding Kurta', image: '/garments/male/kurtas/wedding.jpg' },
+      { id: 13, name: 'Embroidered Kurta', image: '/garments/male/kurtas/embroidered.png' },
+      { id: 14, name: 'Simple White Kurta', image: '/garments/male/kurtas/white.png' },
+      { id: 15, name: 'Wedding Kurta', image: '/garments/male/kurtas/wedding.png' },
     ],
   },
   female: {
     shirts: [
-      { id: 16, name: 'White Blouse', image: '/garments/female/shirts/white-blouse.jpg' },
-      { id: 17, name: 'Floral Shirt', image: '/garments/female/shirts/floral.jpg' },
-      { id: 18, name: 'Silk Button-up', image: '/garments/female/shirts/silk.jpg' },
+      { id: 16, name: 'White Blouse', image: '/garments/female/shirts/white-blouse.png' },
+      { id: 17, name: 'Floral Shirt', image: '/garments/female/shirts/floral.png' },
+      { id: 18, name: 'Silk Button-up', image: '/garments/female/shirts/silk.png' },
     ],
     tshirts: [
-      { id: 19, name: 'Pink Graphic Tee', image: '/garments/female/tshirts/pink-graphic.jpg' },
-      { id: 20, name: 'Basic White Tee', image: '/garments/female/tshirts/white-basic.jpg' },
-      { id: 21, name: 'Crop Top', image: '/garments/female/tshirts/crop-top.jpg' },
+      { id: 19, name: 'Pink Graphic Tee', image: '/garments/female/tshirts/pink-graphic.png' },
+      { id: 20, name: 'Basic White Tee', image: '/garments/female/tshirts/white-basic.png' },
+      { id: 21, name: 'Crop Top', image: '/garments/female/tshirts/crop-top.png' },
     ],
     pants: [
-      { id: 22, name: 'Black Leggings', image: '/garments/female/pants/black-leggings.jpg' },
-      { id: 23, name: 'Skinny Jeans', image: '/garments/female/pants/skinny-jeans.jpg' },
-      { id: 24, name: 'Wide Leg Pants', image: '/garments/female/pants/wide-leg.jpg' },
+      { id: 22, name: 'Black Leggings', image: '/garments/female/pants/black-leggings.png' },
+      { id: 23, name: 'Skinny Jeans', image: '/garments/female/pants/skinny-jeans.png' },
+      { id: 24, name: 'Wide Leg Pants', image: '/garments/female/pants/wide-leg.png' },
     ],
     dresses: [
-      { id: 25, name: 'Summer Dress', image: '/garments/female/dresses/summer.jpg' },
-      { id: 26, name: 'Cocktail Dress', image: '/garments/female/dresses/cocktail.jpg' },
-      { id: 27, name: 'Maxi Dress', image: '/garments/female/dresses/maxi.jpg' },
+      { id: 25, name: 'Summer Dress', image: '/garments/female/dresses/summer.png' },
+      { id: 26, name: 'Cocktail Dress', image: '/garments/female/dresses/cocktail.png' },
+      { id: 27, name: 'Maxi Dress', image: '/garments/female/dresses/maxi.png' },
     ],
     skirts: [
-      { id: 28, name: 'A-line Skirt', image: '/garments/female/skirts/a-line.jpg' },
-      { id: 29, name: 'Pencil Skirt', image: '/garments/female/skirts/pencil.jpg' },
-      { id: 30, name: 'Pleated Skirt', image: '/garments/female/skirts/pleated.jpg' },
+      { id: 28, name: 'A-line Skirt', image: '/garments/female/skirts/a-line.png' },
+      { id: 29, name: 'Pencil Skirt', image: '/garments/female/skirts/pencil.png' },
+      { id: 30, name: 'Pleated Skirt', image: '/garments/female/skirts/pleated.png' },
+    ],
+    saree: [
+      { id: 25, name: 'Kanjiwaram Saree', image: '/garments/female/saree/kanjiwaram.png' },
+      { id: 26, name: 'Gujrati Saree', image: '/garments/female/saree/gujrati.png' },
+      { id: 27, name: 'Rajasthani Saree', image: '/garments/female/saree/rajasthani.png' },
     ],
   }
 };
 
 // Type definitions for garment data structure
 type MaleCategories = 'shirts' | 'tshirts' | 'pants' | 'coats' | 'kurtas';
-type FemaleCategories = 'shirts' | 'tshirts' | 'pants' | 'dresses' | 'skirts';
+type FemaleCategories = 'shirts' | 'tshirts' | 'pants' | 'dresses' | 'skirts' | 'saree';
 type GenderCategories = MaleCategories | FemaleCategories;
 
 // Categories for each gender
@@ -99,6 +104,7 @@ const femaleCategories = [
   { id: 'pants' as const, name: 'Pants', icon: <Footprints className="w-5 h-5" /> },
   { id: 'dresses' as const, name: 'Dresses', icon: <Shirt className="w-5 h-5" /> },
   { id: 'skirts' as const, name: 'Skirts', icon: <Shirt className="w-5 h-5" /> },
+  { id: 'saree' as const, name: 'Saree', icon: <Shirt className="w-5 h-5" /> },
 ];
 
 type GarmentItem = {

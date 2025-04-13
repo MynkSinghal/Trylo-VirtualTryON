@@ -17,6 +17,7 @@ import {
   Diamond,
   Play,
   Store,
+  User,
 } from 'lucide-react';
 import Image from 'next/image';
 import { generateTryOn, type Category } from '@/lib/api';
@@ -29,6 +30,8 @@ import { Footer } from '../components/Footer';
 import { Logo } from '../components/Logo';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
+import { ModelLibraryDialog } from '../components/ModelLibraryDialog';
+import { Model } from '../../src/lib/modelLibrary';
 
 const QUALITY_TIMES = {
   performance: '9sec',
@@ -50,6 +53,8 @@ export default function StudioPage() {
   const [modelPreview, setModelPreview] = useState<string | null>(null);
   const [garmentPreview, setGarmentPreview] = useState<string | null>(null);
   const [garmentName, setGarmentName] = useState<string | null>(null);
+  const [modelName, setModelName] = useState<string | null>(null);
+  const [modelLibraryOpen, setModelLibraryOpen] = useState(false);
   const [category, setCategory] = useState<Category>('tops');
   const [mode, setMode] = useState<'performance' | 'balanced' | 'quality'>('balanced');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -112,6 +117,40 @@ export default function StudioPage() {
     
     checkForSelectedGarment();
   }, [toast]);
+
+  // Handle selection of a model from the library
+  const handleModelSelect = async (model: Model) => {
+    try {
+      // Fetch the selected model image
+      const response = await fetch(model.imageUrl);
+      if (!response.ok) throw new Error('Failed to fetch model image');
+      
+      const blob = await response.blob();
+      
+      // Create a File object from the blob
+      const filename = model.imageUrl.split('/').pop() || 'model.png';
+      const file = new File([blob], filename, { type: blob.type || 'image/png' });
+      
+      // Set model image and preview
+      setModelImage(file);
+      setModelPreview(URL.createObjectURL(blob));
+      setModelName(model.name);
+      
+      // Show success toast
+      toast({
+        title: "Model Selected",
+        description: `${model.name} has been loaded`,
+        variant: "default"
+      });
+    } catch (error) {
+      console.error("Error loading model from library:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load model from library",
+        variant: "destructive"
+      });
+    }
+  };
 
   const handleDrop = async (e: React.DragEvent, type: 'model' | 'garment') => {
     e.preventDefault();
@@ -279,24 +318,41 @@ export default function StudioPage() {
                         className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-50"
                         unoptimized
                       />
+                      {modelName && (
+                        <div className="absolute top-0 left-0 right-0 bg-black/70 text-center py-2 px-4">
+                          <p className="text-sm font-medium">{modelName}</p>
+                        </div>
+                      )}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                         <div className="bg-black/80 p-4 rounded-lg flex flex-col items-center gap-2">
                           <p className="text-sm text-gray-300">Click or drag to replace</p>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => handleFileSelect(e, 'model')}
-                            id="model-upload"
-                          />
-                          <Button 
-                            asChild 
-                            variant="outline"
-                            size="sm"
-                            className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
-                          >
-                            <label htmlFor="model-upload">Replace Image</label>
-                          </Button>
+                          <div className="flex gap-2 mt-2">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => handleFileSelect(e, 'model')}
+                              id="model-upload"
+                            />
+                            <Button 
+                              asChild 
+                              variant="outline"
+                              size="sm"
+                              className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                            >
+                              <label htmlFor="model-upload">Replace Image</label>
+                            </Button>
+                            
+                            <Button 
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                              onClick={() => setModelLibraryOpen(true)}
+                            >
+                              <User className="w-4 h-4" />
+                              Model Library
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -309,20 +365,31 @@ export default function StudioPage() {
                         <p className="text-gray-400 text-lg font-medium">Drop your image here</p>
                         <p className="text-gray-500 text-sm">or paste from clipboard</p>
                       </div>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => handleFileSelect(e, 'model')}
-                        id="model-upload"
-                      />
-                      <Button 
-                        asChild 
-                        variant="outline"
-                        className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
-                      >
-                        <label htmlFor="model-upload">Choose File</label>
-                      </Button>
+                      <div className="flex gap-2">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleFileSelect(e, 'model')}
+                          id="model-upload"
+                        />
+                        <Button 
+                          asChild 
+                          variant="outline"
+                          className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                        >
+                          <label htmlFor="model-upload">Choose File</label>
+                        </Button>
+                        
+                        <Button 
+                          variant="outline"
+                          className="flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                          onClick={() => setModelLibraryOpen(true)}
+                        >
+                          <User className="w-4 h-4" />
+                          Model Library
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -578,6 +645,13 @@ export default function StudioPage() {
           <Footer />
         </div>
       </main>
+      
+      {/* Model Library Dialog */}
+      <ModelLibraryDialog 
+        open={modelLibraryOpen} 
+        onOpenChange={setModelLibraryOpen} 
+        onSelectModel={handleModelSelect} 
+      />
     </div>
   );
 }
