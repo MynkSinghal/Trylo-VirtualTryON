@@ -1,58 +1,72 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Loader2, UserPlus, Mail, Lock } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, UserPlus, Loader2 } from 'lucide-react';
+import { Navbar } from '../components/Navbar';
 import { supabase } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import Link from 'next/link';
-import { Logo } from '@/app/components/Logo';
 
 export default function SignUpPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    acceptTerms: false
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
-    if (password !== confirmPassword) {
+    if (!formData.acceptTerms) {
       toast({
-        title: 'Password Mismatch',
-        description: 'The passwords you entered do not match.',
+        title: 'Terms Required',
+        description: 'Please accept the terms and conditions to continue.',
         variant: 'destructive',
       });
-      setLoading(false);
       return;
     }
 
+    setLoading(true);
+
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=/studio`,
+          data: {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+          },
         },
       });
 
       if (error) throw error;
 
-      toast({
-        title: 'Success!',
-        description: 'Please check your email to verify your account.',
-      });
-      
-      // Stay on the signup page until email confirmation
+      if (data.user) {
+        toast({
+          title: 'Success!',
+          description: 'Please check your email to verify your account.',
+        });
+        router.push('/login');
+      }
     } catch (error) {
+      console.error('Signup error:', error);
       toast({
-        title: 'Sign Up Failed',
+        title: 'Signup Failed',
         description: error instanceof Error ? error.message : 'Failed to create account',
         variant: 'destructive',
       });
@@ -62,106 +76,138 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
-      <nav className="container flex justify-between items-center h-16 px-6">
-        <Link href="/">
-          <Logo />
-        </Link>
-      </nav>
-
-      <main className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md p-6 bg-gray-900/50 border-gray-800">
+    <div className="min-h-screen text-white">
+      <Navbar />
+      
+      <main className="flex min-h-screen items-center justify-center pt-16 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full max-w-md"
+        >
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold mb-2">Create Account</h1>
-            <p className="text-gray-400">Sign up to start generating try-ons</p>
+            <h1 className="page-header">Create Account</h1>
+            <p className="page-subheader">Join us and start your virtual try-on experience</p>
           </div>
-
-          <form onSubmit={handleSignUp} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm text-gray-400">
-                Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                <Input
-                  id="email"
+          
+          <div className="glass-card p-8">
+            <form onSubmit={handleSignUp} className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                    First name
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    className="auth-input"
+                    placeholder="John"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                    Last name
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    className="auth-input"
+                    placeholder="Doe"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                  Email address
+                </label>
+                <input
                   type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
+                  name="email"
+                  className="auth-input"
+                  placeholder="john@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
                   required
                 />
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm text-gray-400">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                <Input
-                  id="password"
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                  Password
+                </label>
+                <input
                   type="password"
-                  placeholder="Create a password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
+                  name="password"
+                  className="auth-input"
+                  placeholder="Create a strong password"
+                  value={formData.password}
+                  onChange={handleChange}
                   required
                   minLength={6}
                 />
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="text-sm text-gray-400">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirm your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-10"
-                  required
-                  minLength={6}
+              
+              <div className="flex items-start">
+                <input
+                  type="checkbox"
+                  name="acceptTerms"
+                  className="mt-1 w-4 h-4 rounded border-gray-600 text-yellow-400 focus:ring-yellow-400/50"
+                  checked={formData.acceptTerms}
+                  onChange={handleChange}
                 />
+                <label className="ml-2 text-sm text-gray-300">
+                  I agree to the{' '}
+                  <Link href="/terms" className="text-yellow-400 hover:text-yellow-300">
+                    Terms of Service
+                  </Link>
+                  {' '}and{' '}
+                  <Link href="/privacy" className="text-yellow-400 hover:text-yellow-300">
+                    Privacy Policy
+                  </Link>
+                </label>
               </div>
-            </div>
-
-            <Button 
-              type="submit" 
-              className="w-full bg-yellow-400 text-black hover:bg-yellow-500"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Creating Account...
-                </>
-              ) : (
-                <>
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Create Account
-                </>
-              )}
-            </Button>
-
-            <p className="text-center text-sm text-gray-400">
-              Already have an account?{' '}
-              <Link 
-                href="/login" 
-                className="text-yellow-400 hover:text-yellow-300"
+              
+              <motion.button
+                type="submit"
+                className="auth-button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                disabled={loading}
               >
-                Sign in
-              </Link>
-            </p>
-          </form>
-        </Card>
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Creating account...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="w-5 h-5" />
+                    Create Account
+                  </>
+                )}
+              </motion.button>
+            </form>
+          </div>
+          
+          <p className="mt-8 text-center text-gray-400">
+            Already have an account?{' '}
+            <Link 
+              href="/login" 
+              className="text-yellow-400 hover:text-yellow-300 font-medium inline-flex items-center gap-1"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Sign in instead
+            </Link>
+          </p>
+        </motion.div>
       </main>
     </div>
   );
