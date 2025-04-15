@@ -24,7 +24,7 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-black/95 border border-gray-800 text-white">
+      <DialogContent className="max-w-5xl bg-black/95 border border-gray-800 text-white">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold flex items-center gap-2">
             <User className="w-5 h-5" />
@@ -49,14 +49,14 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
           </TabsList>
           
           <TabsContent value="male" className="mt-0">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {maleModels.map((model: Model) => (
                 <div 
                   key={model.id}
                   className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer border border-gray-800 hover:border-yellow-400/50"
                   onClick={() => handleSelectModel(model)}
                 >
-                  <div className="relative h-60 w-full">
+                  <div className="relative h-80 w-full">
                     <Image
                       src={model.imageUrl}
                       alt={model.name}
@@ -74,10 +74,8 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       </Button>
                     </div>
                   </div>
-                  <div className="absolute bottom-4 left-4 right-4 text-center">
-                    <span className="px-3 py-1.5 rounded-full bg-black text-white text-sm font-medium">
-                      {model.name}
-                    </span>
+                  <div className="absolute bottom-0 left-0 right-0 bg-black py-2 px-3">
+                    <p className="text-white font-medium text-sm text-center">{model.name}</p>
                   </div>
                 </div>
               ))}
@@ -85,14 +83,14 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
           </TabsContent>
           
           <TabsContent value="female" className="mt-0">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {femaleModels.map((model: Model) => (
                 <div 
                   key={model.id}
                   className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer border border-gray-800 hover:border-yellow-400/50"
                   onClick={() => handleSelectModel(model)}
                 >
-                  <div className="relative h-60 w-full">
+                  <div className="relative h-80 w-full">
                     <Image
                       src={model.imageUrl}
                       alt={model.name}
@@ -110,10 +108,8 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       </Button>
                     </div>
                   </div>
-                  <div className="absolute bottom-4 left-4 right-4 text-center">
-                    <span className="px-3 py-1.5 rounded-full bg-black text-white text-sm font-medium">
-                      {model.name}
-                    </span>
+                  <div className="absolute bottom-0 left-0 right-0 bg-black py-2 px-3">
+                    <p className="text-white font-medium text-sm text-center">{model.name}</p>
                   </div>
                 </div>
               ))}
