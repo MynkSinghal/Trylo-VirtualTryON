@@ -4,8 +4,7 @@ import { uploadImage } from '@/lib/supabase/storage';
 import type { Generation } from '@/lib/supabase/types';
 import { supabase } from '@/lib/supabase/client';
 
-const API_BASE_URL = 'https://api.fashn.ai/v1';
-const API_KEY = process.env.NEXT_PUBLIC_FASHN_API_KEY;
+// API calls are now handled through our server-side proxy route
 const POLL_INTERVAL = 2000; // 2 seconds
 const MAX_POLLING_TIME = 60000; // 60 seconds
 
@@ -47,10 +46,6 @@ export async function generateTryOn({
   onStatusUpdate,
   userId,
 }: GenerateTryOnParams): Promise<string[]> {
-  if (!API_KEY) {
-    throw new Error('FASHN API key not configured');
-  }
-
   try {
     onStatusUpdate?.('Preparing images...');
 
@@ -60,10 +55,9 @@ export async function generateTryOn({
 
     // Initiate the generation
     onStatusUpdate?.('Starting generation...');
-    const initResponse = await fetch(`${API_BASE_URL}/run`, {
+    const initResponse = await fetch(`/api/fashn?endpoint=run`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -78,7 +72,7 @@ export async function generateTryOn({
 
     if (!initResponse.ok) {
       const errorData = await initResponse.json().catch(() => null);
-      throw new Error(errorData?.message || `Failed to initiate generation (${initResponse.status})`);
+      throw new Error(errorData?.error || `Failed to initiate generation (${initResponse.status})`);
     }
 
     const { id } = await initResponse.json();
@@ -89,10 +83,8 @@ export async function generateTryOn({
     const startTime = Date.now();
 
     while (Date.now() - startTime < MAX_POLLING_TIME) {
-      const statusResponse = await fetch(`${API_BASE_URL}/status/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`,
-        }
+      const statusResponse = await fetch(`/api/fashn?taskId=${id}`, {
+        method: 'GET',
       });
 
       if (!statusResponse.ok) {
@@ -210,10 +202,8 @@ async function pollForResults(taskId: string, onStatusUpdate?: (status: string) 
 
   while (true) { // Keep polling until we get a definitive response
     try {
-      const response = await fetch(`${API_BASE_URL}/status/${taskId}`, {
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`,
-        },
+      const response = await fetch(`/api/fashn?taskId=${taskId}`, {
+        method: 'GET',
       });
 
       if (!response.ok) {
