@@ -12,7 +12,8 @@ export const metadata: Metadata = {
   description: 'Experience virtual try-on with AI-powered clothing visualization',
   icons: {
     icon: '/icons/favicon.ico',
-  },
+    apple: '/icons/favicon.ico'
+  }
 };
 
 export default function RootLayout({
