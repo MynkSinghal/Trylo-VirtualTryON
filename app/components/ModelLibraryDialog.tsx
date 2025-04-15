@@ -53,7 +53,7 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
               {maleModels.map((model: Model) => (
                 <div 
                   key={model.id}
-                  className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:border-yellow-400/50 border border-gray-800 group"
+                  className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer border border-gray-800 hover:border-yellow-400/50 group"
                   onClick={() => handleSelectModel(model)}
                 >
                   <div className="relative h-60 w-full">
@@ -61,7 +61,7 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       src={model.imageUrl}
                       alt={model.name}
                       fill
-                      className="object-cover transition-all duration-300 group-hover:opacity-30"
+                      className="object-cover transition-opacity duration-300 group-hover:opacity-30"
                       unoptimized
                     />
                   </div>
@@ -77,8 +77,10 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       </Button>
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-black/80 backdrop-blur-sm">
-                    <p className="text-white font-medium text-sm truncate">{model.name}</p>
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-sm border-t border-gray-800">
+                    <div className="px-4 py-3">
+                      <p className="text-white font-medium text-sm">{model.name}</p>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -90,7 +92,7 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
               {femaleModels.map((model: Model) => (
                 <div 
                   key={model.id}
-                  className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:border-yellow-400/50 border border-gray-800 group"
+                  className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer border border-gray-800 hover:border-yellow-400/50 group"
                   onClick={() => handleSelectModel(model)}
                 >
                   <div className="relative h-60 w-full">
@@ -98,7 +100,7 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       src={model.imageUrl}
                       alt={model.name}
                       fill
-                      className="object-cover transition-all duration-300 group-hover:opacity-30"
+                      className="object-cover transition-opacity duration-300 group-hover:opacity-30"
                       unoptimized
                     />
                   </div>
@@ -114,8 +116,10 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       </Button>
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-black/80 backdrop-blur-sm">
-                    <p className="text-white font-medium text-sm truncate">{model.name}</p>
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-sm border-t border-gray-800">
+                    <div className="px-4 py-3">
+                      <p className="text-white font-medium text-sm">{model.name}</p>
+                    </div>
                   </div>
                 </div>
               ))}
