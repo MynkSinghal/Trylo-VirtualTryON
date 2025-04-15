@@ -37,7 +37,7 @@ export default function LoginPage() {
           description: 'You have been logged in successfully.',
         });
 
-        router.push('/my-generations');
+        router.push('/studio');
       }
     } catch (error) {
       console.error('Login error:', error);
