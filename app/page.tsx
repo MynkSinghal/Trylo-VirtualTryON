@@ -56,7 +56,7 @@ export default function HomePage() {
           className="absolute inset-0 z-0"
           style={{ y, opacity }}
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-purple-500/5" />
+          <div className="absolute inset-0 bg-black" />
         </motion.div>
         
         <div className="container mx-auto px-4 pt-24 z-10">
@@ -281,7 +281,7 @@ export default function HomePage() {
       
       {/* CTA Section */}
       <div className="py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-yellow-500/5 to-transparent"></div>
+        <div className="absolute inset-0 bg-black"></div>
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

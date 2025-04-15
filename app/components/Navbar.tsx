@@ -22,7 +22,7 @@ export function Navbar({ rightLink }: NavbarProps) {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="fixed top-0 left-0 right-0 z-50"
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-transparent backdrop-blur-md"></div>
+      <div className="absolute inset-0 bg-black/100"></div>
       <div className="container flex justify-between items-center h-20 px-6 mx-auto relative z-10">
         <Logo />
         <div className="flex items-center gap-4">
@@ -33,7 +33,7 @@ export function Navbar({ rightLink }: NavbarProps) {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
-                    className="px-6 py-2 bg-yellow-400/90 hover:bg-yellow-400 text-black font-bold rounded-full text-sm transition-colors"
+                    className="px-6 py-2 bg-yellow-400 text-black font-bold rounded-full text-sm transition-colors"
                   >
                     {rightLink.text}
                   </motion.button>
@@ -43,7 +43,7 @@ export function Navbar({ rightLink }: NavbarProps) {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={signOut}
-                className="px-6 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-medium rounded-full text-sm transition-colors"
+                className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white font-medium rounded-full text-sm transition-colors"
               >
                 Sign Out
               </motion.button>
@@ -54,7 +54,7 @@ export function Navbar({ rightLink }: NavbarProps) {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.98 }}
-                  className="px-6 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-medium rounded-full text-sm transition-colors"
+                  className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white font-medium rounded-full text-sm transition-colors"
                 >
                   Log In
                 </motion.button>
@@ -63,7 +63,7 @@ export function Navbar({ rightLink }: NavbarProps) {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.98 }}
-                  className="px-6 py-2 bg-yellow-400/90 hover:bg-yellow-400 text-black font-bold rounded-full text-sm transition-colors"
+                  className="px-6 py-2 bg-yellow-400 text-black font-bold rounded-full text-sm transition-colors"
                 >
                   Sign Up
                 </motion.button>

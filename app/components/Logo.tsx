@@ -11,7 +11,7 @@ export function Logo() {
         height={32}
         className="object-contain"
       />
-      <span className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent">
+      <span className="text-2xl font-bold text-yellow-400">
         Trylo
       </span>
     </Link>
