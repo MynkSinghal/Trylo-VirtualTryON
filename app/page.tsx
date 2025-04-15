@@ -47,16 +47,16 @@ export default function HomePage() {
   };
 
   return (
-    <div className="bg-black text-white overflow-x-hidden">
+    <div className="min-h-screen text-white overflow-x-hidden">
       <Navbar rightLink={user ? { href: "/my-generations", text: "My Generations" } : undefined} />
       
       {/* Hero Section with Parallax */}
-      <div ref={targetRef} className="relative min-h-screen flex items-center noise-bg">
+      <div ref={targetRef} className="relative min-h-screen flex items-center">
         <motion.div 
           className="absolute inset-0 z-0"
           style={{ y, opacity }}
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-yellow-600/10 z-0" />
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-purple-500/5" />
         </motion.div>
         
         <div className="container mx-auto px-4 pt-24 z-10">
@@ -71,7 +71,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2, duration: 0.8 }}
-                className="mb-2 px-4 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-sm text-yellow-300 font-medium inline-flex items-center"
+                className="mb-2 px-4 py-1.5 glass-effect rounded-full text-sm text-yellow-300 font-medium inline-flex items-center"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
                 <span>AI-Powered Virtual Try-On</span>
@@ -105,7 +105,7 @@ export default function HomePage() {
               >
                 <Link href="/studio">
                   <motion.button 
-                    className="group relative px-8 py-4 bg-yellow-400 text-black font-bold rounded-full overflow-hidden transition-all hover:pr-12"
+                    className="group relative px-8 py-4 bg-yellow-400/90 hover:bg-yellow-400 text-black font-bold rounded-full overflow-hidden transition-all hover:pr-12"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -154,7 +154,7 @@ export default function HomePage() {
       </div>
       
       {/* Features Section */}
-      <div ref={featuresRef} className="py-32 bg-black relative">
+      <div ref={featuresRef} className="py-32 relative">
         <motion.div 
           initial="hidden"
           whileInView="visible"
@@ -172,7 +172,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <motion.div 
               variants={itemVariants}
-              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-2xl border border-gray-800 hover:border-yellow-500/30 transition-all"
+              className="glass-card p-8"
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
               <div className="bg-gradient-to-br from-purple-500 to-blue-500 w-12 h-12 rounded-xl flex items-center justify-center mb-6">
@@ -184,7 +184,7 @@ export default function HomePage() {
             
             <motion.div 
               variants={itemVariants}
-              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-2xl border border-gray-800 hover:border-yellow-500/30 transition-all"
+              className="glass-card p-8"
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
               <div className="bg-gradient-to-br from-orange-500 to-red-500 w-12 h-12 rounded-xl flex items-center justify-center mb-6">
@@ -196,7 +196,7 @@ export default function HomePage() {
             
             <motion.div 
               variants={itemVariants}
-              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-2xl border border-gray-800 hover:border-yellow-500/30 transition-all"
+              className="glass-card p-8"
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
               <div className="bg-gradient-to-br from-green-500 to-teal-500 w-12 h-12 rounded-xl flex items-center justify-center mb-6">
@@ -212,7 +212,7 @@ export default function HomePage() {
             className="text-center mt-16"
           >
             <Link href="/studio">
-              <button className="group relative inline-flex items-center gap-2 px-6 py-3 bg-transparent text-white font-bold rounded-full border border-white/20 hover:border-yellow-400/50 transition-all hover:pl-10">
+              <button className="group relative inline-flex items-center gap-2 px-6 py-3 glass-effect rounded-full hover:bg-white/10 transition-all hover:pl-10">
                 <span className="absolute left-4 opacity-0 group-hover:opacity-100 transition-opacity">
                   <ArrowRight className="w-4 h-4" />
                 </span>
@@ -224,7 +224,7 @@ export default function HomePage() {
       </div>
       
       {/* Testimonials */}
-      <div className="py-24 bg-gradient-to-b from-black to-gray-900/30 relative overflow-hidden">
+      <div className="py-24 relative overflow-hidden">
         <div className="container mx-auto px-4">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -246,7 +246,7 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: 0.2 }}
-                className="bg-gray-800/30 backdrop-blur-sm p-8 rounded-2xl border border-gray-700"
+                className="glass-card p-8"
               >
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-400"></div>
@@ -263,7 +263,7 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: 0.4 }}
-                className="bg-gray-800/30 backdrop-blur-sm p-8 rounded-2xl border border-gray-700"
+                className="glass-card p-8"
               >
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400"></div>
@@ -281,7 +281,7 @@ export default function HomePage() {
       
       {/* CTA Section */}
       <div className="py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-yellow-900/20 to-transparent z-0"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-yellow-500/5 to-transparent"></div>
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -300,7 +300,7 @@ export default function HomePage() {
             whileTap={{ scale: 0.98 }}
           >
             <Link href="/studio">
-              <button className="px-10 py-5 bg-yellow-400 text-black font-bold rounded-full text-lg shadow-xl shadow-yellow-500/20">
+              <button className="px-10 py-5 bg-yellow-400/90 hover:bg-yellow-400 text-black font-bold rounded-full text-lg shadow-xl shadow-yellow-500/20">
                 Get Started Now
               </button>
             </Link>
