@@ -74,8 +74,10 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       </Button>
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-black py-2 px-3">
-                    <p className="text-white font-medium text-sm text-center">{model.name}</p>
+                  <div className="absolute bottom-4 left-4 right-4 text-center">
+                    <span className="px-3 py-1.5 rounded-full bg-black text-white text-sm font-medium">
+                      {model.name}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -108,8 +110,10 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       </Button>
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-black py-2 px-3">
-                    <p className="text-white font-medium text-sm text-center">{model.name}</p>
+                  <div className="absolute bottom-4 left-4 right-4 text-center">
+                    <span className="px-3 py-1.5 rounded-full bg-black text-white text-sm font-medium">
+                      {model.name}
+                    </span>
                   </div>
                 </div>
               ))}
