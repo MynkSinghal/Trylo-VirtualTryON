@@ -67,7 +67,6 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="flex flex-col items-center gap-4">
-                      <p className="text-sm text-gray-300">Click to select</p>
                       <Button 
                         variant="outline"
                         size="sm"
@@ -77,10 +76,10 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       </Button>
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-sm border-t border-gray-800">
-                    <div className="px-4 py-3">
-                      <p className="text-white font-medium text-sm">{model.name}</p>
-                    </div>
+                  <div className="absolute bottom-4 left-4 right-4 text-center">
+                    <span className="px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm font-medium">
+                      {model.name}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -106,7 +105,6 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="flex flex-col items-center gap-4">
-                      <p className="text-sm text-gray-300">Click to select</p>
                       <Button 
                         variant="outline"
                         size="sm"
@@ -116,10 +114,10 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       </Button>
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-sm border-t border-gray-800">
-                    <div className="px-4 py-3">
-                      <p className="text-white font-medium text-sm">{model.name}</p>
-                    </div>
+                  <div className="absolute bottom-4 left-4 right-4 text-center">
+                    <span className="px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm font-medium">
+                      {model.name}
+                    </span>
                   </div>
                 </div>
               ))}
