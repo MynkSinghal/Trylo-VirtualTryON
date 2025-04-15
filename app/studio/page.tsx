@@ -206,10 +206,11 @@ export default function StudioPage() {
       if (type === 'model') {
         setModelImage(file);
         setModelPreview(preview);
+        setModelName(null);
       } else {
         setGarmentImage(file);
         setGarmentPreview(preview);
-        setGarmentName(null); // Reset garment name when uploading a new image
+        setGarmentName(null);
       }
     };
     reader.readAsDataURL(file);
@@ -539,16 +540,6 @@ export default function StudioPage() {
                   <Sparkles className="w-5 h-5" />
                   Result
                 </h2>
-                {result && !isProcessing && (
-                  <Button
-                    variant="outline"
-                    className="auth-button-secondary"
-                    onClick={handleDownload}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download
-                  </Button>
-                )}
               </div>
               <div className="border-2 border-gray-700 rounded-lg p-6 h-[400px] transition-all duration-300 hover:border-yellow-400/50">
                 {isProcessing ? (
@@ -602,30 +593,32 @@ export default function StudioPage() {
               {/* Action Buttons */}
               <div className="mt-4">
                 {result && !isProcessing ? (
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Button
-                      onClick={() => {
-                        setResult(null);
-                        setProcessingStatus('');
-                      }}
-                      variant="outline"
-                      className="flex-1 auth-button-secondary"
-                    >
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Generate New
-                    </Button>
-                    <Button
-                      onClick={processImages}
-                      disabled={!modelImage || !garmentImage || isProcessing}
-                      className="flex-1 auth-button"
-                    >
-                      <Play className="w-4 h-4 mr-2" />
-                      Run (~{QUALITY_TIMES[mode]})
-                    </Button>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => {
+                          setResult(null);
+                          setProcessingStatus('');
+                        }}
+                        variant="outline"
+                        className="flex-1 auth-button-secondary"
+                      >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Generate New
+                      </Button>
+                      <Button
+                        onClick={processImages}
+                        disabled={!modelImage || !garmentImage || isProcessing}
+                        className="flex-1 auth-button"
+                      >
+                        <Play className="w-4 h-4 mr-2" />
+                        Run (~{QUALITY_TIMES[mode]})
+                      </Button>
+                    </div>
                     {result && !isProcessing && (
                       <Button
                         variant="outline"
-                        className="flex-1 auth-button"
+                        className="w-full auth-button"
                         onClick={handleDownload}
                       >
                         <Download className="w-4 h-4 mr-2" />
