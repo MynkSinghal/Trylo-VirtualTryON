@@ -1,11 +1,56 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowRight, LogIn } from 'lucide-react';
+import { ArrowRight, LogIn, Loader2 } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
+import { supabase } from '@/lib/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.session) {
+        // Set the session in Supabase
+        await supabase.auth.setSession(data.session);
+        
+        toast({
+          title: 'Success!',
+          description: 'You have been logged in successfully.',
+        });
+
+        router.push('/my-generations');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      toast({
+        title: 'Login Failed',
+        description: error instanceof Error ? error.message : 'Failed to login',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen text-white">
       <Navbar />
@@ -22,8 +67,8 @@ export default function LoginPage() {
             <p className="page-subheader">Sign in to continue your virtual try-on journey</p>
           </div>
           
-          <div className="glass-card p-8 space-y-6">
-            <form className="space-y-4">
+          <div className="glass-card p-8">
+            <form onSubmit={handleLogin} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1.5">
                   Email address
@@ -32,6 +77,9 @@ export default function LoginPage() {
                   type="email"
                   className="auth-input"
                   placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
               </div>
               
@@ -43,6 +91,9 @@ export default function LoginPage() {
                   type="password"
                   className="auth-input"
                   placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
               </div>
               
@@ -61,31 +112,21 @@ export default function LoginPage() {
                 className="auth-button mt-6"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                disabled={loading}
               >
-                <LogIn className="w-5 h-5" />
-                Sign In
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="w-5 h-5" />
+                    Sign In
+                  </>
+                )}
               </motion.button>
             </form>
-            
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-black text-gray-400">Or continue with</span>
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <button className="auth-button-secondary">
-                <img src="/google.svg" alt="Google" className="w-5 h-5" />
-                Continue with Google
-              </button>
-              <button className="auth-button-secondary">
-                <img src="/github.svg" alt="GitHub" className="w-5 h-5" />
-                Continue with GitHub
-              </button>
-            </div>
           </div>
           
           <p className="mt-8 text-center text-gray-400">
