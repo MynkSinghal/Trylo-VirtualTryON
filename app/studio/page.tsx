@@ -330,11 +330,6 @@ export default function StudioPage() {
                       className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-30"
                       unoptimized
                     />
-                    {modelName && (
-                      <div className="absolute top-0 left-0 right-0 bg-black/70 text-center py-2 px-4 rounded-t-lg">
-                        <p className="text-sm font-medium">{modelName}</p>
-                      </div>
-                    )}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <div className="flex flex-col items-center gap-4">
                         <p className="text-sm text-gray-300">Click or drag to replace</p>
@@ -431,11 +426,6 @@ export default function StudioPage() {
                         className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-30"
                         unoptimized
                       />
-                      {garmentName && (
-                        <div className="absolute top-0 left-0 right-0 bg-black/70 text-center py-2 px-4 rounded-t-lg">
-                          <p className="text-sm font-medium">{garmentName}</p>
-                        </div>
-                      )}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <div className="flex flex-col items-center gap-4">
                           <p className="text-sm text-gray-300">Click or drag to replace</p>
@@ -615,11 +605,6 @@ export default function StudioPage() {
                   <div className="flex flex-col sm:flex-row gap-2">
                     <Button
                       onClick={() => {
-                        setModelImage(null);
-                        setGarmentImage(null);
-                        setModelPreview(null);
-                        setGarmentPreview(null);
-                        setGarmentName(null);
                         setResult(null);
                         setProcessingStatus('');
                       }}
@@ -637,6 +622,16 @@ export default function StudioPage() {
                       <Play className="w-4 h-4 mr-2" />
                       Run (~{QUALITY_TIMES[mode]})
                     </Button>
+                    {result && !isProcessing && (
+                      <Button
+                        variant="outline"
+                        className="flex-1 auth-button"
+                        onClick={handleDownload}
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Download
+                      </Button>
+                    )}
                   </div>
                 ) : (
                   <Button
