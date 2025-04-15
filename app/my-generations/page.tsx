@@ -1,202 +1,150 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/auth-context';
-import { Card } from '@/components/ui/card';
-import { getUserGenerations } from '@/lib/supabase/database';
-import { getImageUrl } from '@/lib/supabase/storage';
-import Image from 'next/image';
-import { Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Navbar } from '@/app/components/Navbar';
-import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
-import type { Generation } from '@/lib/supabase/types';
-
-interface GenerationWithUrls extends Generation {
-  modelImageUrl: string;
-  garmentImageUrl: string;
-  resultImageUrl: string;
-}
+import { motion } from 'framer-motion';
+import { Download, Share2, Trash2, Plus, Image as ImageIcon } from 'lucide-react';
+import { Navbar } from '../components/Navbar';
 
 export default function MyGenerationsPage() {
-  const { user, loading: authLoading } = useAuth();
-  const [generations, setGenerations] = useState<GenerationWithUrls[]>([]);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function fetchData() {
-      if (!user?.id) return;
-
-      try {
-        setLoading(true);
-        const data = await getUserGenerations(user.id);
-        
-        // Additional security check
-        const filteredData = data.filter(gen => gen.user_id === user.id);
-        
-        if (filteredData.length !== data.length) {
-          console.error('Security warning: Found generations not belonging to current user');
-        }
-
-        // Get public URLs for all images
-        const generationsWithUrls = await Promise.all(
-          filteredData.map(async (generation) => {
-            try {
-              const [modelImageUrl, garmentImageUrl, resultImageUrl] = await Promise.all([
-                getImageUrl('generations-model-images', generation.model_image_path),
-                getImageUrl('generations-garment-images', generation.garment_image_path),
-                getImageUrl('generations-result-images', generation.result_image_path),
-              ]);
-
-              return {
-                ...generation,
-                modelImageUrl,
-                garmentImageUrl,
-                resultImageUrl,
-              };
-            } catch (error) {
-              console.error('Error loading images for generation:', error);
-              return null;
-            }
-          })
-        );
-
-        if (mounted) {
-          setGenerations(generationsWithUrls.filter((g): g is GenerationWithUrls => 
-            g !== null && g.user_id === user.id
-          ));
-        }
-      } catch (error) {
-        console.error('Error fetching generations:', error);
-        if (error instanceof Error && error.message === 'Unauthorized access') {
-          router.replace('/login');
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
       }
     }
+  };
 
-    if (!authLoading) {
-      if (!user) {
-        router.replace('/login');
-      } else {
-        fetchData();
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1]
       }
     }
-
-    return () => {
-      mounted = false;
-    };
-  }, [user, authLoading, router]);
-
-  // Show loading state while checking auth
-  if (authLoading || loading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-yellow-400" />
-      </div>
-    );
-  }
-
-  // If no user, the useEffect will handle redirect
-  if (!user) {
-    return null;
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <Navbar rightLink={{ href: "/studio", text: "Create New" }} />
-
-      <main className="container mx-auto px-6 py-8 pt-24">
-        <h1 className="text-3xl font-bold mb-8">My Generations</h1>
-
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-yellow-400" />
-          </div>
-        ) : generations.length === 0 ? (
-          <Card className="p-6 bg-gray-900/50 border-gray-800 text-center">
-            <p className="text-gray-400">You haven't created any generations yet.</p>
-            <Link href="/studio" className="mt-4 inline-block">
-              <InteractiveHoverButton className="px-8 py-2 text-sm flex items-center gap-2 min-w-[200px] whitespace-nowrap">
-                Create your first generation
-              </InteractiveHoverButton>
-            </Link>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {generations.map((generation) => (
-              <Card 
-                key={generation.id} 
-                className="p-4 bg-gray-900/50 border-gray-800 flex flex-col overflow-hidden"
+    <div className="min-h-screen text-white">
+      <Navbar />
+      
+      <main className="container mx-auto px-4 py-24">
+        <div className="max-w-6xl mx-auto">
+          {/* Header Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-12"
+          >
+            <h1 className="page-header">My Generations</h1>
+            <p className="page-subheader">View and manage all your virtual try-on generations</p>
+          </motion.div>
+          
+          {/* Create New Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mb-12"
+          >
+            <button className="auth-button max-w-xs mx-auto">
+              <Plus className="w-5 h-5" />
+              Create New Generation
+            </button>
+          </motion.div>
+          
+          {/* Grid of Generations */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {/* Empty State */}
+            {Array.from({ length: 0 }).length === 0 && (
+              <motion.div
+                variants={itemVariants}
+                className="col-span-full flex flex-col items-center justify-center glass-card p-12 text-center"
               >
-                {/* Input Images Row */}
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  <div className="relative aspect-square">
-                    <div className="absolute inset-0 border-2 border-gray-800 rounded-lg overflow-hidden">
-                      <Image
-                        src={generation.modelImageUrl}
-                        alt="Model"
-                        fill
-                        className="object-contain p-1"
-                        sizes="(max-width: 768px) 50vw, 33vw"
-                      />
-                    </div>
-                    <div className="absolute top-2 left-2 bg-black/50 px-2 py-1 rounded text-xs">
-                      Model
-                    </div>
-                  </div>
-                  <div className="relative aspect-square">
-                    <div className="absolute inset-0 border-2 border-gray-800 rounded-lg overflow-hidden">
-                      <Image
-                        src={generation.garmentImageUrl}
-                        alt="Garment"
-                        fill
-                        className="object-contain p-1"
-                        sizes="(max-width: 768px) 50vw, 33vw"
-                      />
-                    </div>
-                    <div className="absolute top-2 left-2 bg-black/50 px-2 py-1 rounded text-xs">
-                      Garment
-                    </div>
+                <ImageIcon className="w-16 h-16 text-gray-500 mb-4" />
+                <h3 className="text-xl font-bold mb-2">No generations yet</h3>
+                <p className="text-gray-400 mb-6">
+                  Start by creating your first virtual try-on generation
+                </p>
+                <button className="auth-button max-w-xs">
+                  <Plus className="w-5 h-5" />
+                  Create First Generation
+                </button>
+              </motion.div>
+            )}
+            
+            {/* Generation Cards */}
+            {Array.from({ length: 6 }).map((_, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                className="glass-card group"
+              >
+                {/* Image Container */}
+                <div className="relative aspect-square overflow-hidden rounded-t-xl">
+                  <img
+                    src={`https://picsum.photos/seed/${index}/400/400`}
+                    alt={`Generation ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                    >
+                      <Download className="w-5 h-5" />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                    >
+                      <Share2 className="w-5 h-5" />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </motion.button>
                   </div>
                 </div>
-
-                {/* Result Image */}
-                <div className="relative aspect-[3/4] mb-4">
-                  <div className="absolute inset-0 border-2 border-gray-800 rounded-lg overflow-hidden">
-                    <Image
-                      src={generation.resultImageUrl}
-                      alt="Result"
-                      fill
-                      className="object-contain p-1"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                    />
-                  </div>
-                  <div className="absolute top-2 left-2 bg-black/50 px-2 py-1 rounded text-xs">
-                    Result
-                  </div>
+                
+                {/* Card Content */}
+                <div className="p-4">
+                  <h3 className="font-bold mb-1">Generation #{index + 1}</h3>
+                  <p className="text-sm text-gray-400">Created on April {index + 1}, 2024</p>
                 </div>
-
-                {/* Generation Info */}
-                <div className="text-sm text-gray-400 space-y-1 mt-auto">
-                  <p>Category: {generation.category}</p>
-                  <p>Quality: {generation.mode}</p>
-                  <p>Created: {new Date(generation.created_at).toLocaleDateString()}</p>
-                  {generation.processing_time && (
-                    <p>Processing Time: {generation.processing_time}</p>
-                  )}
-                </div>
-              </Card>
+              </motion.div>
             ))}
-          </div>
-        )}
+          </motion.div>
+          
+          {/* Load More Button */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="text-center mt-12"
+          >
+            <button className="auth-button-secondary max-w-xs mx-auto">
+              Load More
+            </button>
+          </motion.div>
+        </div>
       </main>
     </div>
   );
