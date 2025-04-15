@@ -32,6 +32,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
 import { ModelLibraryDialog } from '../components/ModelLibraryDialog';
 import { Model } from '../../src/lib/modelLibrary';
+import { Navbar } from '../components/Navbar';
 
 const QUALITY_TIMES = {
   performance: '9sec',
@@ -285,20 +286,12 @@ export default function StudioPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <nav className="container flex justify-between items-center h-16 px-6">
-        <Logo />
-        <Link href="/my-generations">
-          <InteractiveHoverButton className="px-8 py-2 text-sm flex items-center gap-2 min-w-[160px] whitespace-nowrap">
-            
-            My Generations
-          </InteractiveHoverButton>
-        </Link>
-      </nav>
+      <Navbar rightLink={{ href: "/my-generations", text: "My Generations" }} />
 
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-4 md:px-6 py-4 md:py-8 overflow-x-hidden pt-24">
         <div className="min-h-screen bg-black text-white flex flex-col">
-          <div className="flex-1 p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="flex-1 py-4 md:p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
               {/* Model Upload Box */}
               <Card className="p-6 bg-gray-900/50 border-gray-800">
                 <h2 className="text-2xl font-semibold mb-4">Upload Model Photo</h2>
@@ -495,15 +488,15 @@ export default function StudioPage() {
                   </div>
 
                   {/* Garment Type Buttons */}
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <Button
                       variant="outline"
                       size="sm"
                       className={`flex-1 py-3 ${category === 'tops' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
                       onClick={() => setCategory('tops')}
                     >
-                      <TopSvg className={`w-4 h-4 mr-2 ${category === 'tops' ? 'text-black' : 'text-white'}`} />
-                      Top
+                      <TopSvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'tops' ? 'text-black' : 'text-white'}`} />
+                      <span className="text-xs md:text-sm">Top</span>
                     </Button>
                     <Button
                       variant="outline"
@@ -511,8 +504,8 @@ export default function StudioPage() {
                       className={`flex-1 py-3 ${category === 'bottoms' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
                       onClick={() => setCategory('bottoms')}
                     >
-                      <BottomSvg className={`w-4 h-4 mr-2 ${category === 'bottoms' ? 'text-black' : 'text-white'}`} />
-                      Bottom
+                      <BottomSvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'bottoms' ? 'text-black' : 'text-white'}`} />
+                      <span className="text-xs md:text-sm">Bottom</span>
                     </Button>
                     <Button
                       variant="outline"
@@ -520,8 +513,8 @@ export default function StudioPage() {
                       className={`flex-1 py-3 ${category === 'one-pieces' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
                       onClick={() => setCategory('one-pieces')}
                     >
-                      <FullbodySvg className={`w-4 h-4 mr-2 ${category === 'one-pieces' ? 'text-black' : 'text-white'}`} />
-                      Full Body
+                      <FullbodySvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'one-pieces' ? 'text-black' : 'text-white'}`} />
+                      <span className="text-xs md:text-sm">Full Body</span>
                     </Button>
                   </div>
                 </div>
@@ -562,38 +555,38 @@ export default function StudioPage() {
                     </div>
                   )}
                 </div>
-                <div className="mt-6 flex gap-2">
+                <div className="mt-6 grid grid-cols-3 gap-1 md:gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`flex-1 py-3 ${mode === 'performance' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                    className={`py-3 ${mode === 'performance' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
                     onClick={() => setMode('performance')}
                   >
-                    <Zap className="w-4 h-4 mr-2" />
-                    Performance
+                    <Zap className="w-4 h-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">Performance</span>
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`flex-1 py-3 ${mode === 'balanced' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                    className={`py-3 ${mode === 'balanced' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
                     onClick={() => setMode('balanced')}
                   >
-                    <Scale className="w-4 h-4 mr-2" />
-                    Balanced
+                    <Scale className="w-4 h-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">Balanced</span>
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`flex-1 py-3 ${mode === 'quality' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
+                    className={`py-3 ${mode === 'quality' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
                     onClick={() => setMode('quality')}
                   >
-                    <Diamond className="w-4 h-4 mr-2" />
-                    Quality
+                    <Diamond className="w-4 h-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">Quality</span>
                   </Button>
                 </div>
                 <div className="mt-4">
                   {result && !isProcessing ? (
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <Button
                         onClick={() => {
                           setModelImage(null);
@@ -605,7 +598,7 @@ export default function StudioPage() {
                           setProcessingStatus('');
                         }}
                         variant="outline"
-                        className="flex-1 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black py-6"
+                        className="flex-1 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black py-4 md:py-6"
                       >
                         <Sparkles className="w-4 h-4 mr-2" />
                         Generate New
@@ -613,7 +606,7 @@ export default function StudioPage() {
                       <Button
                         onClick={processImages}
                         disabled={!modelImage || !garmentImage || isProcessing}
-                        className="flex-1 bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 py-6"
+                        className="flex-1 bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 py-4 md:py-6"
                       >
                         <Play className="w-4 h-4 mr-2" />
                         Run (~{QUALITY_TIMES[mode]})
@@ -623,7 +616,7 @@ export default function StudioPage() {
                     <Button
                       onClick={processImages}
                       disabled={!modelImage || !garmentImage || isProcessing}
-                      className="w-full bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 py-6"
+                      className="w-full bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 py-4 md:py-6"
                     >
                       {isProcessing ? (
                         <>

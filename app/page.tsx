@@ -1,46 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { Sparkles } from 'lucide-react';
 import { AuroraText } from "@/components/magicui/aurora-text";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
-import VariableProximity from "@/components/ui/variable-proximity";
 import { useRef } from 'react';
-import { Logo } from './components/Logo';
 import { Footer } from './components/Footer';
-import { AuthButtons } from '@/components/auth/auth-buttons';
+import { Navbar } from './components/Navbar';
 import { useAuth } from '@/contexts/auth-context';
 
 export default function HomePage() {
   const descriptionRef = useRef<HTMLDivElement>(null);
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
 
   return (
     <div className="h-screen bg-black text-white flex flex-col">
-      <nav className="container flex justify-between items-center h-16 px-6">
-        <Logo />
-        <div className="flex items-center gap-4">
-          {user ? (
-            <div className="flex items-center gap-4">
-              <Link href="/my-generations">
-                <InteractiveHoverButton className="px-8 py-2 text-sm flex items-center gap-2 min-w-[160px] whitespace-nowrap">
-                  My Generations
-                </InteractiveHoverButton>
-              </Link>
-              <button
-                onClick={signOut}
-                className="text-gray-400 hover:text-gray-300 text-sm"
-              >
-                Sign Out
-              </button>
-            </div>
-          ) : (
-            <AuthButtons />
-          )}
-        </div>
-      </nav>
+      <Navbar rightLink={user ? { href: "/my-generations", text: "My Generations" } : undefined} />
 
-      <main className="flex-1 flex flex-col items-center justify-center">
+      <main className="flex-1 flex flex-col items-center justify-center pt-16">
         <div className="max-w-3xl mx-auto text-center space-y-12 px-4">
           <div className="space-y-12">
             <h1 className="text-7xl font-bold tracking-tight">

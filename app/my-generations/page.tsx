@@ -8,8 +8,8 @@ import { getImageUrl } from '@/lib/supabase/storage';
 import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Logo } from '@/app/components/Logo';
 import Link from 'next/link';
+import { Navbar } from '@/app/components/Navbar';
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 import type { Generation } from '@/lib/supabase/types';
 
@@ -111,16 +111,9 @@ export default function MyGenerationsPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <nav className="container flex justify-between items-center h-16 px-6">
-        <Logo />
-        <Link href="/studio">
-          <InteractiveHoverButton className="px-8 py-2 text-sm flex items-center gap-2 min-w-[160px] whitespace-nowrap">
-            Create New
-          </InteractiveHoverButton>
-        </Link>
-      </nav>
+      <Navbar rightLink={{ href: "/studio", text: "Create New" }} />
 
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-6 py-8 pt-24">
         <h1 className="text-3xl font-bold mb-8">My Generations</h1>
 
         {loading ? (
