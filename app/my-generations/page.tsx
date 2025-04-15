@@ -25,6 +25,9 @@ export default function MyGenerationsPage() {
   const [generations, setGenerations] = useState<Generation[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 9;
 
   // Animation variants
   const containerVariants = {
@@ -49,11 +52,7 @@ export default function MyGenerationsPage() {
     }
   };
 
-  useEffect(() => {
-    fetchGenerations();
-  }, []);
-
-  const fetchGenerations = async () => {
+  const fetchGenerations = async (pageNumber = 1) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -62,11 +61,15 @@ export default function MyGenerationsPage() {
         return;
       }
 
+      const from = (pageNumber - 1) * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
       const { data, error } = await supabase
         .from('generations')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
 
@@ -92,7 +95,13 @@ export default function MyGenerationsPage() {
         };
       }));
 
-      setGenerations(generationsWithUrls);
+      if (pageNumber === 1) {
+        setGenerations(generationsWithUrls);
+      } else {
+        setGenerations(prev => [...prev, ...generationsWithUrls]);
+      }
+      
+      setHasMore(generationsWithUrls.length === ITEMS_PER_PAGE);
     } catch (error) {
       console.error('Error fetching generations:', error);
       toast({
@@ -104,6 +113,16 @@ export default function MyGenerationsPage() {
       setLoading(false);
     }
   };
+
+  const loadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchGenerations(nextPage);
+  };
+
+  useEffect(() => {
+    fetchGenerations();
+  }, []);
 
   const handleDelete = async (id: number) => {
     try {
@@ -195,93 +214,116 @@ export default function MyGenerationsPage() {
           
           {/* Grid of Generations */}
           {!loading && (
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              {/* Empty State */}
-              {generations.length === 0 && (
-                <motion.div
-                  variants={itemVariants}
-                  className="col-span-full flex flex-col items-center justify-center glass-card p-12 text-center"
-                >
-                  <ImageIcon className="w-16 h-16 text-gray-500 mb-4" />
-                  <h3 className="text-xl font-bold mb-2">No generations yet</h3>
-                  <p className="text-gray-400 mb-6">
-                    Start by creating your first virtual try-on generation
-                  </p>
-                  <button 
-                    onClick={() => router.push('/generate')}
-                    className="auth-button max-w-xs"
+            <>
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {/* Empty State */}
+                {generations.length === 0 && (
+                  <motion.div
+                    variants={itemVariants}
+                    className="col-span-full flex flex-col items-center justify-center glass-card p-12 text-center"
                   >
-                    <Plus className="w-5 h-5" />
-                    Create First Generation
+                    <ImageIcon className="w-16 h-16 text-gray-500 mb-4" />
+                    <h3 className="text-xl font-bold mb-2">No generations yet</h3>
+                    <p className="text-gray-400 mb-6">
+                      Start by creating your first virtual try-on generation
+                    </p>
+                    <button 
+                      onClick={() => router.push('/generate')}
+                      className="auth-button max-w-xs"
+                    >
+                      <Plus className="w-5 h-5" />
+                      Create First Generation
+                    </button>
+                  </motion.div>
+                )}
+                
+                {/* Generation Cards */}
+                {generations.map((generation) => (
+                  <motion.div
+                    key={generation.id}
+                    variants={itemVariants}
+                    className="glass-card group"
+                  >
+                    {/* Images Grid */}
+                    <div className="grid grid-cols-2 gap-4 p-4">
+                      <div className="relative">
+                        <Image
+                          src={generation.model_image_path}
+                          alt="Model"
+                          width={200}
+                          height={200}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      </div>
+                      <div className="relative">
+                        <Image
+                          src={generation.garment_image_path}
+                          alt="Garment"
+                          width={200}
+                          height={200}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      </div>
+                      <div className="relative col-span-2">
+                        <Image
+                          src={generation.result_image_path}
+                          alt="Result"
+                          width={400}
+                          height={200}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Card Content */}
+                    <div className="p-4 pt-0">
+                      <div className="flex justify-between items-center mb-3">
+                        <div className="text-sm">
+                          <span className="font-medium text-yellow-400">{generation.mode}</span>
+                          <span className="mx-2">•</span>
+                          <span className="text-gray-400">{generation.category}</span>
+                        </div>
+                        <div className="text-sm text-gray-400">
+                          {new Date(generation.created_at).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          })}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleDownload(generation)}
+                        className="w-full bg-yellow-400/10 hover:bg-yellow-400/20 text-yellow-400 rounded-full py-2 px-4 flex items-center justify-center gap-2 transition-colors duration-200"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>Download Result</span>
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              {/* Load More Button */}
+              {hasMore && generations.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mt-8 flex justify-center"
+                >
+                  <button
+                    onClick={loadMore}
+                    className="auth-button-secondary max-w-xs"
+                  >
+                    Load More Generations
                   </button>
                 </motion.div>
               )}
-              
-              {/* Generation Cards */}
-              {generations.map((generation) => (
-                <motion.div
-                  key={generation.id}
-                  variants={itemVariants}
-                  className="glass-card group"
-                >
-                  {/* Images Grid */}
-                  <div className="grid grid-cols-2 gap-4 p-4">
-                    <div className="relative">
-                      <Image
-                        src={generation.model_image_path}
-                        alt="Model"
-                        width={200}
-                        height={200}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    </div>
-                    <div className="relative">
-                      <Image
-                        src={generation.garment_image_path}
-                        alt="Garment"
-                        width={200}
-                        height={200}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    </div>
-                    <div className="relative col-span-2">
-                      <Image
-                        src={generation.result_image_path}
-                        alt="Result"
-                        width={400}
-                        height={200}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    </div>
-                    <div className="col-span-2 text-sm text-gray-400 flex justify-between items-center">
-                      <div>
-                        <span className="font-medium">{generation.mode}</span> • {generation.category}
-                      </div>
-                      <div>
-                        {new Date(generation.created_at).toLocaleDateString('en-GB', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric'
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Card Content */}
-                  <div className="p-4 pt-0">
-                    <h3 className="font-bold mb-1">Generation #{generation.id}</h3>
-                    <p className="text-sm text-gray-400">
-                      Created on {new Date(generation.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+            </>
           )}
         </div>
       </main>
