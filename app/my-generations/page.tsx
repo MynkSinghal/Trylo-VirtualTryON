@@ -7,14 +7,16 @@ import { Navbar } from '../components/Navbar';
 import { supabase } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface Generation {
   id: number;
-  created_at: string;
   model_image_path: string;
   garment_image_path: string;
   result_image_path: string;
-  user_id: string;
+  created_at: string;
+  mode: string;
+  category: string;
 }
 
 export default function MyGenerationsPage() {
@@ -228,47 +230,44 @@ export default function MyGenerationsPage() {
                   className="glass-card group"
                 >
                   {/* Images Grid */}
-                  <div className="grid grid-cols-2 gap-2 p-4">
-                    <div className="relative aspect-square overflow-hidden rounded-lg">
-                      <img
+                  <div className="grid grid-cols-2 gap-4 p-4">
+                    <div className="relative">
+                      <Image
                         src={generation.model_image_path}
-                        alt="Model Image"
-                        className="w-full h-full object-cover"
+                        alt="Model"
+                        width={200}
+                        height={200}
+                        className="w-full h-full object-cover rounded-lg"
                       />
-                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                        <p className="text-xs font-medium">Model</p>
-                      </div>
                     </div>
-                    <div className="relative aspect-square overflow-hidden rounded-lg">
-                      <img
+                    <div className="relative">
+                      <Image
                         src={generation.garment_image_path}
-                        alt="Garment Image"
-                        className="w-full h-full object-cover"
+                        alt="Garment"
+                        width={200}
+                        height={200}
+                        className="w-full h-full object-cover rounded-lg"
                       />
-                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                        <p className="text-xs font-medium">Garment</p>
-                      </div>
                     </div>
-                    <div className="relative aspect-square overflow-hidden rounded-lg col-span-2">
-                      <img
+                    <div className="relative col-span-2">
+                      <Image
                         src={generation.result_image_path}
-                        alt="Result Image"
-                        className="w-full h-full object-cover"
+                        alt="Result"
+                        width={400}
+                        height={200}
+                        className="w-full h-full object-cover rounded-lg"
                       />
-                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                        <p className="text-xs font-medium">Result</p>
+                    </div>
+                    <div className="col-span-2 text-sm text-gray-400 flex justify-between items-center">
+                      <div>
+                        <span className="font-medium">{generation.mode}</span> • {generation.category}
                       </div>
-                      
-                      {/* Hover Overlay - Only Download Button */}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <motion.button
-                          onClick={() => handleDownload(generation)}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-                        >
-                          <Download className="w-5 h-5" />
-                        </motion.button>
+                      <div>
+                        {new Date(generation.created_at).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric'
+                        })}
                       </div>
                     </div>
                   </div>
