@@ -24,7 +24,7 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] max-w-3xl glass-card bg-black/95 backdrop-blur-sm border border-gray-800 text-white">
+      <DialogContent className="bg-black/95 border border-gray-800 text-white">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold flex items-center gap-2">
             <User className="w-5 h-5" />
@@ -49,11 +49,11 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
           </TabsList>
           
           <TabsContent value="male" className="mt-0">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {maleModels.map((model: Model) => (
                 <div 
                   key={model.id}
-                  className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer border border-gray-800 hover:border-yellow-400/50 group"
+                  className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer border border-gray-800 hover:border-yellow-400/50"
                   onClick={() => handleSelectModel(model)}
                 >
                   <div className="relative h-60 w-full">
@@ -61,12 +61,10 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       src={model.imageUrl}
                       alt={model.name}
                       fill
-                      className="object-cover transition-opacity duration-300 group-hover:opacity-30"
+                      className="object-cover"
                       unoptimized
                     />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="flex flex-col items-center gap-4">
+                    <div className="absolute inset-0 opacity-0 hover:opacity-100 bg-black/70 flex items-center justify-center transition-opacity">
                       <Button 
                         variant="outline"
                         size="sm"
@@ -76,10 +74,8 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       </Button>
                     </div>
                   </div>
-                  <div className="absolute bottom-4 left-4 right-4 text-center">
-                    <span className="px-3 py-1.5 rounded-full bg-black text-white text-sm font-medium">
-                      {model.name}
-                    </span>
+                  <div className="absolute bottom-0 left-0 right-0 bg-black py-2 px-3">
+                    <p className="text-white font-medium text-sm text-center">{model.name}</p>
                   </div>
                 </div>
               ))}
@@ -87,11 +83,11 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
           </TabsContent>
           
           <TabsContent value="female" className="mt-0">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {femaleModels.map((model: Model) => (
                 <div 
                   key={model.id}
-                  className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer border border-gray-800 hover:border-yellow-400/50 group"
+                  className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer border border-gray-800 hover:border-yellow-400/50"
                   onClick={() => handleSelectModel(model)}
                 >
                   <div className="relative h-60 w-full">
@@ -99,12 +95,10 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       src={model.imageUrl}
                       alt={model.name}
                       fill
-                      className="object-cover transition-opacity duration-300 group-hover:opacity-30"
+                      className="object-cover"
                       unoptimized
                     />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="flex flex-col items-center gap-4">
+                    <div className="absolute inset-0 opacity-0 hover:opacity-100 bg-black/70 flex items-center justify-center transition-opacity">
                       <Button 
                         variant="outline"
                         size="sm"
@@ -114,10 +108,8 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       </Button>
                     </div>
                   </div>
-                  <div className="absolute bottom-4 left-4 right-4 text-center">
-                    <span className="px-3 py-1.5 rounded-full bg-black text-white text-sm font-medium">
-                      {model.name}
-                    </span>
+                  <div className="absolute bottom-0 left-0 right-0 bg-black py-2 px-3">
+                    <p className="text-white font-medium text-sm text-center">{model.name}</p>
                   </div>
                 </div>
               ))}
