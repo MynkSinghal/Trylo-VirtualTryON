@@ -309,36 +309,36 @@ export default function StudioPage() {
             className="grid grid-cols-1 lg:grid-cols-3 gap-6"
           >
             {/* Model Upload Box */}
-            <div className="glass-card p-6 bg-black/40 backdrop-blur-sm border border-gray-800">
+            <div className="glass-card p-6 bg-black/95 backdrop-blur-sm border border-gray-800">
               <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
                 <User className="w-5 h-5" />
                 Upload Model Photo
               </h2>
               <div
                 id="model-box"
-                className="border-2 border-dashed border-gray-700 rounded-lg p-6 h-[500px] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:border-yellow-400 hover:bg-black/20 relative group"
+                className="border-2 border-dashed border-gray-700 rounded-lg p-6 h-[500px] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:border-yellow-400 relative group"
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => handleDrop(e, 'model')}
                 tabIndex={0}
               >
                 {modelPreview ? (
-                  <div className="relative h-full w-full group flex items-center justify-center">
+                  <div className="relative h-full w-full flex items-center justify-center">
                     <Image
                       src={modelPreview}
                       alt="Model preview"
                       fill
-                      className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-50"
+                      className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-30"
                       unoptimized
                     />
                     {modelName && (
-                      <div className="absolute top-0 left-0 right-0 bg-black/70 backdrop-blur-sm text-center py-2 px-4 rounded-t-lg">
+                      <div className="absolute top-0 left-0 right-0 bg-black/70 text-center py-2 px-4 rounded-t-lg">
                         <p className="text-sm font-medium">{modelName}</p>
                       </div>
                     )}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <div className="glass-card p-4 flex flex-col items-center gap-2">
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="flex flex-col items-center gap-4">
                         <p className="text-sm text-gray-300">Click or drag to replace</p>
-                        <div className="flex gap-2 mt-2">
+                        <div className="flex gap-2">
                           <input
                             type="file"
                             accept="image/*"
@@ -350,7 +350,7 @@ export default function StudioPage() {
                             asChild 
                             variant="outline"
                             size="sm"
-                            className="auth-button-secondary"
+                            className="auth-button"
                           >
                             <label htmlFor="model-upload">Replace Image</label>
                           </Button>
@@ -358,7 +358,7 @@ export default function StudioPage() {
                           <Button 
                             variant="outline"
                             size="sm"
-                            className="auth-button-secondary flex items-center gap-2"
+                            className="auth-button flex items-center gap-2"
                             onClick={() => setModelLibraryOpen(true)}
                           >
                             <User className="w-4 h-4" />
@@ -408,7 +408,7 @@ export default function StudioPage() {
             </div>
 
             {/* Garment Upload Box */}
-            <div className="glass-card p-6 bg-black/40 backdrop-blur-sm border border-gray-800">
+            <div className="glass-card p-6 bg-black/95 backdrop-blur-sm border border-gray-800">
               <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
                 <Store className="w-5 h-5" />
                 Upload Garment
@@ -417,29 +417,29 @@ export default function StudioPage() {
                 {/* Upload Area */}
                 <div
                   id="garment-box"
-                  className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center cursor-pointer transition-all duration-300 hover:border-yellow-400 hover:bg-black/20 relative group"
+                  className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center cursor-pointer transition-all duration-300 hover:border-yellow-400 relative group"
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleDrop(e, 'garment')}
                   tabIndex={0}
                 >
                   {garmentPreview ? (
-                    <div className="relative h-[400px] w-full group">
+                    <div className="relative h-[400px] w-full">
                       <Image
                         src={garmentPreview}
                         alt="Garment preview"
                         fill
-                        className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-50"
+                        className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-30"
                         unoptimized
                       />
                       {garmentName && (
-                        <div className="absolute top-0 left-0 right-0 bg-black/70 backdrop-blur-sm text-center py-2 px-4 rounded-t-lg">
+                        <div className="absolute top-0 left-0 right-0 bg-black/70 text-center py-2 px-4 rounded-t-lg">
                           <p className="text-sm font-medium">{garmentName}</p>
                         </div>
                       )}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        <div className="glass-card p-4 flex flex-col items-center gap-2">
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="flex flex-col items-center gap-4">
                           <p className="text-sm text-gray-300">Click or drag to replace</p>
-                          <div className="flex gap-2 mt-2">
+                          <div className="flex gap-2">
                             <input
                               type="file"
                               accept="image/*"
@@ -451,7 +451,7 @@ export default function StudioPage() {
                               asChild 
                               variant="outline"
                               size="sm"
-                              className="auth-button-secondary"
+                              className="auth-button"
                             >
                               <label htmlFor="garment-upload">Replace Image</label>
                             </Button>
@@ -460,7 +460,7 @@ export default function StudioPage() {
                               <Button 
                                 variant="outline"
                                 size="sm"
-                                className="auth-button-secondary flex items-center gap-2"
+                                className="auth-button flex items-center gap-2"
                               >
                                 <Store className="w-4 h-4" />
                                 Browse Library
@@ -514,7 +514,7 @@ export default function StudioPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`flex-1 py-3 ${category === 'tops' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
+                    className={`flex-1 py-3 rounded-full ${category === 'tops' ? 'bg-yellow-400 text-black hover:bg-yellow-500 rounded-full' : 'auth-button-secondary'}`}
                     onClick={() => setCategory('tops')}
                   >
                     <TopSvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'tops' ? 'text-black' : 'text-white'}`} />
@@ -523,7 +523,7 @@ export default function StudioPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`flex-1 py-3 ${category === 'bottoms' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
+                    className={`flex-1 py-3 rounded-full ${category === 'bottoms' ? 'bg-yellow-400 text-black hover:bg-yellow-500 rounded-full' : 'auth-button-secondary'}`}
                     onClick={() => setCategory('bottoms')}
                   >
                     <BottomSvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'bottoms' ? 'text-black' : 'text-white'}`} />
@@ -532,7 +532,7 @@ export default function StudioPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`flex-1 py-3 ${category === 'one-pieces' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
+                    className={`flex-1 py-3 rounded-full ${category === 'one-pieces' ? 'bg-yellow-400 text-black hover:bg-yellow-500 rounded-full' : 'auth-button-secondary'}`}
                     onClick={() => setCategory('one-pieces')}
                   >
                     <FullbodySvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'one-pieces' ? 'text-black' : 'text-white'}`} />
@@ -543,7 +543,7 @@ export default function StudioPage() {
             </div>
 
             {/* Result Box */}
-            <div className="glass-card p-6 bg-black/40 backdrop-blur-sm border border-gray-800">
+            <div className="glass-card p-6 bg-black/95 backdrop-blur-sm border border-gray-800">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold flex items-center gap-2">
                   <Sparkles className="w-5 h-5" />
