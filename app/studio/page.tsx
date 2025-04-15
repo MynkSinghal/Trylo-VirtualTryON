@@ -309,7 +309,7 @@ export default function StudioPage() {
             className="grid grid-cols-1 lg:grid-cols-3 gap-6"
           >
             {/* Model Upload Box */}
-            <div className="glass-card p-6">
+            <div className="glass-card p-6 bg-black/40 backdrop-blur-sm border border-gray-800">
               <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
                 <User className="w-5 h-5" />
                 Upload Model Photo
@@ -408,7 +408,7 @@ export default function StudioPage() {
             </div>
 
             {/* Garment Upload Box */}
-            <div className="glass-card p-6">
+            <div className="glass-card p-6 bg-black/40 backdrop-blur-sm border border-gray-800">
               <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
                 <Store className="w-5 h-5" />
                 Upload Garment
@@ -543,7 +543,7 @@ export default function StudioPage() {
             </div>
 
             {/* Result Box */}
-            <div className="glass-card p-6">
+            <div className="glass-card p-6 bg-black/40 backdrop-blur-sm border border-gray-800">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold flex items-center gap-2">
                   <Sparkles className="w-5 h-5" />
@@ -586,28 +586,25 @@ export default function StudioPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className={`py-3 ${mode === 'performance' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
+                  className={`py-3 rounded-full ${mode === 'performance' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
                   onClick={() => setMode('performance')}
                 >
-                  <Zap className="w-4 h-4 mr-1 md:mr-2" />
                   <span className="text-xs md:text-sm">Performance</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className={`py-3 ${mode === 'balanced' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
+                  className={`py-3 rounded-full ${mode === 'balanced' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
                   onClick={() => setMode('balanced')}
                 >
-                  <Scale className="w-4 h-4 mr-1 md:mr-2" />
                   <span className="text-xs md:text-sm">Balanced</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className={`py-3 ${mode === 'quality' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
+                  className={`py-3 rounded-full ${mode === 'quality' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
                   onClick={() => setMode('quality')}
                 >
-                  <Diamond className="w-4 h-4 mr-1 md:mr-2" />
                   <span className="text-xs md:text-sm">Quality</span>
                 </Button>
               </div>
