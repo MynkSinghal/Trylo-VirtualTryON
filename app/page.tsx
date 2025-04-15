@@ -49,7 +49,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen text-white overflow-x-hidden">
       <Navbar rightLink={user ? { href: "/my-generations", text: "My Generations" } : undefined} />
-      
+
       {/* Hero Section with Parallax */}
       <div ref={targetRef} className="relative min-h-screen flex items-center">
         <motion.div 
@@ -83,7 +83,7 @@ export default function HomePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.8 }}
               >
-                Virtual Try-On 
+              Virtual Try-On
                 <span className="block mt-2 font-cursive text-yellow-400 text-6xl md:text-8xl">Reimagined</span>
               </motion.h1>
               
@@ -307,7 +307,7 @@ export default function HomePage() {
           </motion.div>
         </motion.div>
       </div>
-      
+
       <Footer />
     </div>
   );
