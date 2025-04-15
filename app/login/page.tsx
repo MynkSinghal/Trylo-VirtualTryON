@@ -1,154 +1,104 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Loader2, LogIn, Mail } from 'lucide-react';
-import { supabase } from '@/lib/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { Logo } from '@/app/components/Logo';
+import { motion } from 'framer-motion';
+import { ArrowRight, LogIn } from 'lucide-react';
+import { Navbar } from '../components/Navbar';
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { toast } = useToast();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      console.log('Attempting login...');
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      if (data.session) {
-        console.log('Session received:', data.session);
-        
-        // Set the session in Supabase
-        await supabase.auth.setSession(data.session);
-        
-        // Add a delay to ensure session is set
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Get session to verify it's set
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log('Verified session:', session);
-
-        if (session) {
-          toast({
-            title: 'Success!',
-            description: 'You have been logged in successfully.',
-          });
-
-          // Use router.replace with await
-          console.log('Redirecting to dashboard...');
-          await router.replace('/dashboard');
-        } else {
-          throw new Error('Session not set after login');
-        }
-      } else {
-        console.error('No session received after login');
-        throw new Error('No session received after login');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      toast({
-        title: 'Login Failed',
-        description: error instanceof Error ? error.message : 'Failed to login',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
-      <nav className="container flex justify-between items-center h-16 px-6">
-        <Link href="/">
-          <Logo />
-        </Link>
-      </nav>
-
-      <main className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md p-6 bg-gray-900/50 border-gray-800">
+    <div className="min-h-screen text-white">
+      <Navbar />
+      
+      <main className="flex min-h-screen items-center justify-center pt-16 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full max-w-md"
+        >
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold mb-2">Welcome Back</h1>
-            <p className="text-gray-400">Sign in to your account to continue</p>
+            <h1 className="page-header">Welcome Back</h1>
+            <p className="page-subheader">Sign in to continue your virtual try-on journey</p>
           </div>
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm text-gray-400">
-                Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                <Input
-                  id="email"
+          
+          <div className="glass-card p-8 space-y-6">
+            <form className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                  Email address
+                </label>
+                <input
                   type="email"
+                  className="auth-input"
                   placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
-                  required
                 />
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm text-gray-400">
-                Password
-              </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-
-            <Button 
-              type="submit" 
-              className="w-full bg-yellow-400 text-black hover:bg-yellow-500"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                <>
-                  <LogIn className="w-4 h-4 mr-2" />
-                  Sign In
-                </>
-              )}
-            </Button>
-
-            <p className="text-center text-sm text-gray-400">
-              Don&apos;t have an account?{' '}
-              <Link 
-                href="/signup" 
-                className="text-yellow-400 hover:text-yellow-300"
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  className="auth-input"
+                  placeholder="Enter your password"
+                />
+              </div>
+              
+              <div className="flex items-center justify-between text-sm">
+                <label className="flex items-center">
+                  <input type="checkbox" className="w-4 h-4 rounded border-gray-600 text-yellow-400 focus:ring-yellow-400/50" />
+                  <span className="ml-2 text-gray-300">Remember me</span>
+                </label>
+                <Link href="/forgot-password" className="text-yellow-400 hover:text-yellow-300">
+                  Forgot password?
+                </Link>
+              </div>
+              
+              <motion.button
+                type="submit"
+                className="auth-button mt-6"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                Sign up
-              </Link>
-            </p>
-          </form>
-        </Card>
+                <LogIn className="w-5 h-5" />
+                Sign In
+              </motion.button>
+            </form>
+            
+            <div className="relative my-8">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/10"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-black text-gray-400">Or continue with</span>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <button className="auth-button-secondary">
+                <img src="/google.svg" alt="Google" className="w-5 h-5" />
+                Continue with Google
+              </button>
+              <button className="auth-button-secondary">
+                <img src="/github.svg" alt="GitHub" className="w-5 h-5" />
+                Continue with GitHub
+              </button>
+            </div>
+          </div>
+          
+          <p className="mt-8 text-center text-gray-400">
+            Don't have an account?{' '}
+            <Link 
+              href="/signup" 
+              className="text-yellow-400 hover:text-yellow-300 font-medium inline-flex items-center gap-1"
+            >
+              Sign up now
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </p>
+        </motion.div>
       </main>
     </div>
   );
