@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { maleModels, femaleModels, type Model } from '../../src/lib/modelLibrary';
+import { User, User2 } from 'lucide-react';
 
 interface ModelLibraryDialogProps {
   open: boolean;
@@ -23,18 +24,27 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl bg-gray-900 border-gray-800 text-white">
+      <DialogContent className="max-w-3xl glass-card bg-black/95 backdrop-blur-sm border border-gray-800 text-white">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Model Library</DialogTitle>
+          <DialogTitle className="text-xl font-semibold flex items-center gap-2">
+            <User className="w-5 h-5" />
+            Model Library
+          </DialogTitle>
         </DialogHeader>
         
         <Tabs defaultValue="male" value={selectedTab} onValueChange={(value) => setSelectedTab(value as 'male' | 'female')}>
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="male" className="data-[state=active]:bg-yellow-400 data-[state=active]:text-black">
-              Male Models
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger 
+              value="male" 
+              className="flex items-center gap-2 text-base py-3 data-[state=active]:bg-yellow-400 data-[state=active]:text-black"
+            >
+              <User className="w-4 h-4" /> Male Models
             </TabsTrigger>
-            <TabsTrigger value="female" className="data-[state=active]:bg-yellow-400 data-[state=active]:text-black">
-              Female Models
+            <TabsTrigger 
+              value="female" 
+              className="flex items-center gap-2 text-base py-3 data-[state=active]:bg-yellow-400 data-[state=active]:text-black"
+            >
+              <User2 className="w-4 h-4" /> Female Models
             </TabsTrigger>
           </TabsList>
           
@@ -43,7 +53,7 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
               {maleModels.map((model: Model) => (
                 <div 
                   key={model.id}
-                  className="relative bg-gray-800 rounded-lg overflow-hidden cursor-pointer transition-all hover:ring-2 hover:ring-yellow-400 group"
+                  className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:border-yellow-400/50 border border-gray-800 group"
                   onClick={() => handleSelectModel(model)}
                 >
                   <div className="relative h-60 w-full">
@@ -51,14 +61,24 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       src={model.imageUrl}
                       alt={model.name}
                       fill
-                      className="object-cover transition-transform group-hover:scale-105"
+                      className="object-cover transition-all duration-300 group-hover:opacity-30"
                       unoptimized
                     />
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
-                    <div className="p-2 w-full">
-                      <p className="text-white font-medium text-sm truncate">{model.name}</p>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="flex flex-col items-center gap-4">
+                      <p className="text-sm text-gray-300">Click to select</p>
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        className="auth-button"
+                      >
+                        Select Model
+                      </Button>
                     </div>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-black/80 backdrop-blur-sm">
+                    <p className="text-white font-medium text-sm truncate">{model.name}</p>
                   </div>
                 </div>
               ))}
@@ -70,7 +90,7 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
               {femaleModels.map((model: Model) => (
                 <div 
                   key={model.id}
-                  className="relative bg-gray-800 rounded-lg overflow-hidden cursor-pointer transition-all hover:ring-2 hover:ring-yellow-400 group"
+                  className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:border-yellow-400/50 border border-gray-800 group"
                   onClick={() => handleSelectModel(model)}
                 >
                   <div className="relative h-60 w-full">
@@ -78,14 +98,24 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                       src={model.imageUrl}
                       alt={model.name}
                       fill
-                      className="object-cover transition-transform group-hover:scale-105"
+                      className="object-cover transition-all duration-300 group-hover:opacity-30"
                       unoptimized
                     />
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
-                    <div className="p-2 w-full">
-                      <p className="text-white font-medium text-sm truncate">{model.name}</p>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="flex flex-col items-center gap-4">
+                      <p className="text-sm text-gray-300">Click to select</p>
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        className="auth-button"
+                      >
+                        Select Model
+                      </Button>
                     </div>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-black/80 backdrop-blur-sm">
+                    <p className="text-white font-medium text-sm truncate">{model.name}</p>
                   </div>
                 </div>
               ))}
