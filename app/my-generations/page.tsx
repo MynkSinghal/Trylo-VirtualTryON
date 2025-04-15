@@ -2,16 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Download, Share2, Trash2, Plus, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Download, Share2, Trash2, Plus, ImageIcon, Loader2 } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 import { supabase } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 
 interface Generation {
-  id: string;
+  id: number;
   created_at: string;
-  image_url: string;
+  model_image_path: string;
+  garment_image_path: string;
+  result_image_path: string;
   user_id: string;
 }
 
@@ -20,7 +22,7 @@ export default function MyGenerationsPage() {
   const { toast } = useToast();
   const [generations, setGenerations] = useState<Generation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [deleting, setDeleting] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<number | null>(null);
 
   // Animation variants
   const containerVariants = {
@@ -79,7 +81,7 @@ export default function MyGenerationsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     try {
       setDeleting(id);
       const { error } = await supabase
@@ -111,7 +113,7 @@ export default function MyGenerationsPage() {
       await navigator.share({
         title: 'Check out my virtual try-on!',
         text: 'Generated with Trylo Virtual Try-On',
-        url: generation.image_url,
+        url: generation.result_image_path,
       });
     } catch (error) {
       if (error instanceof Error && error.name !== 'AbortError') {
@@ -126,7 +128,7 @@ export default function MyGenerationsPage() {
 
   const handleDownload = async (generation: Generation) => {
     try {
-      const response = await fetch(generation.image_url);
+      const response = await fetch(generation.result_image_path);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -221,50 +223,75 @@ export default function MyGenerationsPage() {
                   variants={itemVariants}
                   className="glass-card group"
                 >
-                  {/* Image Container */}
-                  <div className="relative aspect-square overflow-hidden rounded-t-xl">
-                    <img
-                      src={generation.image_url}
-                      alt={`Generation ${generation.id}`}
-                      className="w-full h-full object-cover"
-                    />
-                    
-                    {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                      <motion.button
-                        onClick={() => handleDownload(generation)}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-                      >
-                        <Download className="w-5 h-5" />
-                      </motion.button>
-                      <motion.button
-                        onClick={() => handleShare(generation)}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-                      >
-                        <Share2 className="w-5 h-5" />
-                      </motion.button>
-                      <motion.button
-                        onClick={() => handleDelete(generation.id)}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-                        disabled={deleting === generation.id}
-                      >
-                        {deleting === generation.id ? (
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-5 h-5" />
-                        )}
-                      </motion.button>
+                  {/* Images Grid */}
+                  <div className="grid grid-cols-2 gap-2 p-4">
+                    <div className="relative aspect-square overflow-hidden rounded-lg">
+                      <img
+                        src={generation.model_image_path}
+                        alt="Model Image"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                        <p className="text-xs font-medium">Model</p>
+                      </div>
+                    </div>
+                    <div className="relative aspect-square overflow-hidden rounded-lg">
+                      <img
+                        src={generation.garment_image_path}
+                        alt="Garment Image"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                        <p className="text-xs font-medium">Garment</p>
+                      </div>
+                    </div>
+                    <div className="relative aspect-square overflow-hidden rounded-lg col-span-2">
+                      <img
+                        src={generation.result_image_path}
+                        alt="Result Image"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                        <p className="text-xs font-medium">Result</p>
+                      </div>
+                      
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                        <motion.button
+                          onClick={() => handleDownload(generation)}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                        >
+                          <Download className="w-5 h-5" />
+                        </motion.button>
+                        <motion.button
+                          onClick={() => handleShare(generation)}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                        >
+                          <Share2 className="w-5 h-5" />
+                        </motion.button>
+                        <motion.button
+                          onClick={() => handleDelete(generation.id)}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                          disabled={deleting === generation.id}
+                        >
+                          {deleting === generation.id ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-5 h-5" />
+                          )}
+                        </motion.button>
+                      </div>
                     </div>
                   </div>
                   
                   {/* Card Content */}
-                  <div className="p-4">
+                  <div className="p-4 pt-0">
                     <h3 className="font-bold mb-1">Generation #{generation.id}</h3>
                     <p className="text-sm text-gray-400">
                       Created on {new Date(generation.created_at).toLocaleDateString()}
