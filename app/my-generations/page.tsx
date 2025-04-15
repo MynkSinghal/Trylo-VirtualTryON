@@ -29,6 +29,14 @@ export default function MyGenerationsPage() {
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
 
+  // Format text to proper case
+  const formatText = (text: string) => {
+    // Split by spaces and format each word
+    return text.split(' ').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    ).join(' ');
+  };
+
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -114,15 +122,25 @@ export default function MyGenerationsPage() {
     }
   };
 
+  // Check authentication and fetch generations on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+      fetchGenerations();
+    };
+
+    checkAuth();
+  }, []);
+
   const loadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
     fetchGenerations(nextPage);
   };
-
-  useEffect(() => {
-    fetchGenerations();
-  }, []);
 
   const handleDelete = async (id: number) => {
     try {
@@ -197,7 +215,7 @@ export default function MyGenerationsPage() {
             className="mb-12"
           >
             <button 
-              onClick={() => router.push('/generate')}
+              onClick={() => router.push('/studio')}
               className="auth-button max-w-xs mx-auto"
             >
               <Plus className="w-5 h-5" />
@@ -233,7 +251,7 @@ export default function MyGenerationsPage() {
                       Start by creating your first virtual try-on generation
                     </p>
                     <button 
-                      onClick={() => router.push('/generate')}
+                      onClick={() => router.push('/studio')}
                       className="auth-button max-w-xs"
                     >
                       <Plus className="w-5 h-5" />
@@ -284,9 +302,9 @@ export default function MyGenerationsPage() {
                     <div className="p-4 pt-0">
                       <div className="flex justify-between items-center mb-3">
                         <div className="text-sm">
-                          <span className="font-medium text-yellow-400">{generation.mode}</span>
+                          <span className="font-medium text-yellow-400">{formatText(generation.mode)}</span>
                           <span className="mx-2">•</span>
-                          <span className="text-gray-400">{generation.category}</span>
+                          <span className="text-gray-400">{formatText(generation.category)}</span>
                         </div>
                         <div className="text-sm text-gray-400">
                           {new Date(generation.created_at).toLocaleDateString('en-GB', {

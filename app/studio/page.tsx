@@ -33,6 +33,7 @@ import { useRouter } from 'next/navigation';
 import { ModelLibraryDialog } from '../components/ModelLibraryDialog';
 import { Model } from '../../src/lib/modelLibrary';
 import { Navbar } from '../components/Navbar';
+import { motion } from 'framer-motion';
 
 const QUALITY_TIMES = {
   performance: '9sec',
@@ -285,357 +286,383 @@ export default function StudioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white">
       <Navbar rightLink={{ href: "/my-generations", text: "My Generations" }} />
 
-      <main className="container mx-auto px-4 md:px-6 py-4 md:py-8 overflow-x-hidden pt-24">
-        <div className="min-h-screen bg-black text-white flex flex-col">
-          <div className="flex-1 py-4 md:p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-              {/* Model Upload Box */}
-              <Card className="p-6 bg-gray-900/50 border-gray-800">
-                <h2 className="text-2xl font-semibold mb-4">Upload Model Photo</h2>
+      <main className="container mx-auto px-4 py-24">
+        <div className="max-w-7xl mx-auto">
+          {/* Header Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-12"
+          >
+            <h1 className="page-header">Virtual Try-On Studio</h1>
+            <p className="page-subheader">Upload a model photo and garment to create your virtual try-on</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+          >
+            {/* Model Upload Box */}
+            <div className="glass-card p-6">
+              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                <User className="w-5 h-5" />
+                Upload Model Photo
+              </h2>
+              <div
+                id="model-box"
+                className="border-2 border-dashed border-gray-700 rounded-lg p-6 h-[500px] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:border-yellow-400 hover:bg-black/20 relative group"
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => handleDrop(e, 'model')}
+                tabIndex={0}
+              >
+                {modelPreview ? (
+                  <div className="relative h-full w-full group flex items-center justify-center">
+                    <Image
+                      src={modelPreview}
+                      alt="Model preview"
+                      fill
+                      className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-50"
+                      unoptimized
+                    />
+                    {modelName && (
+                      <div className="absolute top-0 left-0 right-0 bg-black/70 backdrop-blur-sm text-center py-2 px-4 rounded-t-lg">
+                        <p className="text-sm font-medium">{modelName}</p>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <div className="glass-card p-4 flex flex-col items-center gap-2">
+                        <p className="text-sm text-gray-300">Click or drag to replace</p>
+                        <div className="flex gap-2 mt-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleFileSelect(e, 'model')}
+                            id="model-upload"
+                          />
+                          <Button 
+                            asChild 
+                            variant="outline"
+                            size="sm"
+                            className="auth-button-secondary"
+                          >
+                            <label htmlFor="model-upload">Replace Image</label>
+                          </Button>
+                          
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            className="auth-button-secondary flex items-center gap-2"
+                            onClick={() => setModelLibraryOpen(true)}
+                          >
+                            <User className="w-4 h-4" />
+                            Model Library
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-6 text-center">
+                    <div className="w-20 h-20 mx-auto rounded-full bg-black/30 flex items-center justify-center transition-transform group-hover:scale-110 duration-300">
+                      <Upload className="w-10 h-10 text-gray-500 transition-colors group-hover:text-yellow-400" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-gray-300 text-lg font-medium">Drop your image here</p>
+                      <p className="text-gray-400 text-sm">or paste from clipboard</p>
+                    </div>
+                    <div className="flex gap-2 justify-center">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleFileSelect(e, 'model')}
+                        id="model-upload"
+                      />
+                      <Button 
+                        asChild 
+                        variant="outline"
+                        className="auth-button-secondary"
+                      >
+                        <label htmlFor="model-upload">Choose File</label>
+                      </Button>
+                      
+                      <Button 
+                        variant="outline"
+                        className="auth-button-secondary flex items-center gap-2"
+                        onClick={() => setModelLibraryOpen(true)}
+                      >
+                        <User className="w-4 h-4" />
+                        Model Library
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Garment Upload Box */}
+            <div className="glass-card p-6">
+              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                <Store className="w-5 h-5" />
+                Upload Garment
+              </h2>
+              <div className="space-y-4">
+                {/* Upload Area */}
                 <div
-                  id="model-box"
-                  className="border-2 border-dashed border-gray-500 rounded-lg p-6 h-[500px] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:border-yellow-400 hover:bg-gray-700/30 relative group"
+                  id="garment-box"
+                  className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center cursor-pointer transition-all duration-300 hover:border-yellow-400 hover:bg-black/20 relative group"
                   onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => handleDrop(e, 'model')}
+                  onDrop={(e) => handleDrop(e, 'garment')}
                   tabIndex={0}
                 >
-                  {modelPreview ? (
-                    <div className="relative h-full w-full group flex items-center justify-center">
+                  {garmentPreview ? (
+                    <div className="relative h-[400px] w-full group">
                       <Image
-                        src={modelPreview}
-                        alt="Model preview"
+                        src={garmentPreview}
+                        alt="Garment preview"
                         fill
                         className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-50"
                         unoptimized
                       />
-                      {modelName && (
-                        <div className="absolute top-0 left-0 right-0 bg-black/70 text-center py-2 px-4">
-                          <p className="text-sm font-medium">{modelName}</p>
+                      {garmentName && (
+                        <div className="absolute top-0 left-0 right-0 bg-black/70 backdrop-blur-sm text-center py-2 px-4 rounded-t-lg">
+                          <p className="text-sm font-medium">{garmentName}</p>
                         </div>
                       )}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        <div className="bg-black/80 p-4 rounded-lg flex flex-col items-center gap-2">
+                        <div className="glass-card p-4 flex flex-col items-center gap-2">
                           <p className="text-sm text-gray-300">Click or drag to replace</p>
                           <div className="flex gap-2 mt-2">
                             <input
                               type="file"
                               accept="image/*"
                               className="hidden"
-                              onChange={(e) => handleFileSelect(e, 'model')}
-                              id="model-upload"
+                              onChange={(e) => handleFileSelect(e, 'garment')}
+                              id="garment-upload"
                             />
                             <Button 
                               asChild 
                               variant="outline"
                               size="sm"
-                              className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                              className="auth-button-secondary"
                             >
-                              <label htmlFor="model-upload">Replace Image</label>
+                              <label htmlFor="garment-upload">Replace Image</label>
                             </Button>
                             
-                            <Button 
-                              variant="outline"
-                              size="sm"
-                              className="flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
-                              onClick={() => setModelLibraryOpen(true)}
-                            >
-                              <User className="w-4 h-4" />
-                              Model Library
-                            </Button>
+                            <Link href="/garment-library">
+                              <Button 
+                                variant="outline"
+                                size="sm"
+                                className="auth-button-secondary flex items-center gap-2"
+                              >
+                                <Store className="w-4 h-4" />
+                                Browse Library
+                              </Button>
+                            </Link>
                           </div>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-6 text-center">
-                      <div className="w-20 h-20 mx-auto rounded-full bg-gray-900/50 flex items-center justify-center transition-transform group-hover:scale-110 duration-300">
-                        <Upload className="w-10 h-10 text-gray-500 transition-colors group-hover:text-yellow-400" />
+                    <div className="flex flex-col items-center justify-center h-[400px]">
+                      <div className="w-16 h-16 rounded-full bg-black/30 flex items-center justify-center transition-transform group-hover:scale-110 duration-300">
+                        <ImageIcon className="w-8 h-8 text-gray-600 transition-colors group-hover:text-yellow-400" />
                       </div>
-                      <div className="space-y-2">
-                        <p className="text-gray-400 text-lg font-medium">Drop your image here</p>
-                        <p className="text-gray-500 text-sm">or paste from clipboard</p>
+                      <div className="mt-4 space-y-2">
+                        <p className="text-gray-300 text-lg font-medium">Drop your garment here</p>
+                        <p className="text-gray-400 text-sm">or paste from clipboard</p>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 mt-4">
                         <input
                           type="file"
                           accept="image/*"
                           className="hidden"
-                          onChange={(e) => handleFileSelect(e, 'model')}
-                          id="model-upload"
+                          onChange={(e) => handleFileSelect(e, 'garment')}
+                          id="garment-upload"
                         />
                         <Button 
                           asChild 
                           variant="outline"
-                          className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                          className="auth-button-secondary"
                         >
-                          <label htmlFor="model-upload">Choose File</label>
+                          <label htmlFor="garment-upload">Choose File</label>
                         </Button>
                         
-                        <Button 
-                          variant="outline"
-                          className="flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
-                          onClick={() => setModelLibraryOpen(true)}
-                        >
-                          <User className="w-4 h-4" />
-                          Model Library
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </Card>
-
-              {/* Garment Upload Box */}
-              <Card className="p-6 bg-gray-900/50 border-gray-800">
-                <h2 className="text-2xl font-semibold mb-4">Upload Garment</h2>
-                <div className="space-y-4">
-                  {/* Upload Area */}
-                  <div
-                    id="garment-box"
-                    className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center cursor-pointer transition-all duration-300 hover:border-yellow-400 relative group"
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={(e) => handleDrop(e, 'garment')}
-                    tabIndex={0}
-                  >
-                    {garmentPreview ? (
-                      <div className="relative h-[400px] w-full group">
-                        <Image
-                          src={garmentPreview}
-                          alt="Garment preview"
-                          fill
-                          className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-50"
-                          unoptimized
-                        />
-                        {garmentName && (
-                          <div className="absolute top-0 left-0 right-0 bg-black/70 text-center py-2 px-4">
-                            <p className="text-sm font-medium">{garmentName}</p>
-                          </div>
-                        )}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                          <div className="bg-black/80 p-4 rounded-lg flex flex-col items-center gap-2">
-                            <p className="text-sm text-gray-300">Click or drag to replace</p>
-                            <div className="flex gap-2 mt-2">
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={(e) => handleFileSelect(e, 'garment')}
-                                id="garment-upload"
-                              />
-                              <Button 
-                                asChild 
-                                variant="outline"
-                                size="sm"
-                                className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
-                              >
-                                <label htmlFor="garment-upload">Replace Image</label>
-                              </Button>
-                              
-                              <Link href="/garment-library">
-                                <Button 
-                                  variant="outline"
-                                  size="sm"
-                                  className="flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
-                                >
-                                  <Store className="w-4 h-4" />
-                                  Browse Library
-                                </Button>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-[400px]">
-                        <div className="w-16 h-16 rounded-full bg-gray-900/50 flex items-center justify-center transition-transform group-hover:scale-110 duration-300">
-                          <ImageIcon className="w-8 h-8 text-gray-600 transition-colors group-hover:text-yellow-400" />
-                        </div>
-                        <div className="mt-4 space-y-2">
-                          <p className="text-gray-400 text-lg font-medium">Drop your garment here</p>
-                          <p className="text-gray-500 text-sm">or paste from clipboard</p>
-                        </div>
-                        <div className="flex gap-2 mt-4">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => handleFileSelect(e, 'garment')}
-                            id="garment-upload"
-                          />
+                        <Link href="/garment-library">
                           <Button 
-                            asChild 
                             variant="outline"
-                            className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
+                            className="auth-button-secondary flex items-center gap-2"
                           >
-                            <label htmlFor="garment-upload">Choose File</label>
+                            <Store className="w-4 h-4" />
+                            Browse Library
                           </Button>
-                          
-                          <Link href="/garment-library">
-                            <Button 
-                              variant="outline"
-                              className="flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
-                            >
-                              <Store className="w-4 h-4" />
-                              Browse Library
-                            </Button>
-                          </Link>
-                        </div>
+                        </Link>
                       </div>
-                    )}
-                  </div>
-
-                  {/* Garment Type Buttons */}
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={`flex-1 py-3 ${category === 'tops' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
-                      onClick={() => setCategory('tops')}
-                    >
-                      <TopSvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'tops' ? 'text-black' : 'text-white'}`} />
-                      <span className="text-xs md:text-sm">Top</span>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={`flex-1 py-3 ${category === 'bottoms' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
-                      onClick={() => setCategory('bottoms')}
-                    >
-                      <BottomSvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'bottoms' ? 'text-black' : 'text-white'}`} />
-                      <span className="text-xs md:text-sm">Bottom</span>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={`flex-1 py-3 ${category === 'one-pieces' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
-                      onClick={() => setCategory('one-pieces')}
-                    >
-                      <FullbodySvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'one-pieces' ? 'text-black' : 'text-white'}`} />
-                      <span className="text-xs md:text-sm">Full Body</span>
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Updated Result Box */}
-              <Card className="p-6 bg-gray-900/50 border-gray-800">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-semibold">Result</h2>
-                  {result && !isProcessing && (
-                    <Button
-                      variant="outline"
-                      className="transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:text-black hover:border-yellow-400"
-                      onClick={handleDownload}
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Download
-                    </Button>
-                  )}
-                </div>
-                <div className="border-2 border-gray-700 rounded-lg p-6 h-[500px]">
-                  {isProcessing ? (
-                    <ProcessingStatus status={processingStatus} />
-                  ) : result ? (
-                    <div className="relative h-full w-full flex items-center justify-center">
-                      <Image
-                        src={result}
-                        alt="Result preview"
-                        fill
-                        className="object-contain rounded-lg"
-                        unoptimized
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-4">
-                      <ImageIcon className="w-16 h-16 opacity-20" />
-                      <p className="text-lg">Your result will appear here</p>
                     </div>
                   )}
                 </div>
-                <div className="mt-6 grid grid-cols-3 gap-1 md:gap-2">
+
+                {/* Garment Type Buttons */}
+                <div className="flex flex-wrap gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`py-3 ${mode === 'performance' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
-                    onClick={() => setMode('performance')}
+                    className={`flex-1 py-3 ${category === 'tops' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
+                    onClick={() => setCategory('tops')}
                   >
-                    <Zap className="w-4 h-4 mr-1 md:mr-2" />
-                    <span className="text-xs md:text-sm">Performance</span>
+                    <TopSvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'tops' ? 'text-black' : 'text-white'}`} />
+                    <span className="text-xs md:text-sm">Top</span>
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`py-3 ${mode === 'balanced' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
-                    onClick={() => setMode('balanced')}
+                    className={`flex-1 py-3 ${category === 'bottoms' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
+                    onClick={() => setCategory('bottoms')}
                   >
-                    <Scale className="w-4 h-4 mr-1 md:mr-2" />
-                    <span className="text-xs md:text-sm">Balanced</span>
+                    <BottomSvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'bottoms' ? 'text-black' : 'text-white'}`} />
+                    <span className="text-xs md:text-sm">Bottom</span>
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`py-3 ${mode === 'quality' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'hover:bg-gray-800'}`}
-                    onClick={() => setMode('quality')}
+                    className={`flex-1 py-3 ${category === 'one-pieces' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
+                    onClick={() => setCategory('one-pieces')}
                   >
-                    <Diamond className="w-4 h-4 mr-1 md:mr-2" />
-                    <span className="text-xs md:text-sm">Quality</span>
+                    <FullbodySvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'one-pieces' ? 'text-black' : 'text-white'}`} />
+                    <span className="text-xs md:text-sm">Full Body</span>
                   </Button>
                 </div>
-                <div className="mt-4">
-                  {result && !isProcessing ? (
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <Button
-                        onClick={() => {
-                          setModelImage(null);
-                          setGarmentImage(null);
-                          setModelPreview(null);
-                          setGarmentPreview(null);
-                          setGarmentName(null);
-                          setResult(null);
-                          setProcessingStatus('');
-                        }}
-                        variant="outline"
-                        className="flex-1 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black py-4 md:py-6"
-                      >
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        Generate New
-                      </Button>
-                      <Button
-                        onClick={processImages}
-                        disabled={!modelImage || !garmentImage || isProcessing}
-                        className="flex-1 bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 py-4 md:py-6"
-                      >
-                        <Play className="w-4 h-4 mr-2" />
-                        Run (~{QUALITY_TIMES[mode]})
-                      </Button>
-                    </div>
-                  ) : (
+              </div>
+            </div>
+
+            {/* Result Box */}
+            <div className="glass-card p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  Result
+                </h2>
+                {result && !isProcessing && (
+                  <Button
+                    variant="outline"
+                    className="auth-button-secondary"
+                    onClick={handleDownload}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download
+                  </Button>
+                )}
+              </div>
+              <div className="border-2 border-gray-700 rounded-lg p-6 h-[400px] transition-all duration-300 hover:border-yellow-400/50">
+                {isProcessing ? (
+                  <ProcessingStatus status={processingStatus} />
+                ) : result ? (
+                  <div className="relative h-full w-full flex items-center justify-center">
+                    <Image
+                      src={result}
+                      alt="Result preview"
+                      fill
+                      className="object-contain rounded-lg"
+                      unoptimized
+                    />
+                  </div>
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-4">
+                    <ImageIcon className="w-16 h-16 opacity-20" />
+                    <p className="text-lg">Your result will appear here</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Quality Mode Selection */}
+              <div className="mt-6 grid grid-cols-3 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`py-3 ${mode === 'performance' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
+                  onClick={() => setMode('performance')}
+                >
+                  <Zap className="w-4 h-4 mr-1 md:mr-2" />
+                  <span className="text-xs md:text-sm">Performance</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`py-3 ${mode === 'balanced' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
+                  onClick={() => setMode('balanced')}
+                >
+                  <Scale className="w-4 h-4 mr-1 md:mr-2" />
+                  <span className="text-xs md:text-sm">Balanced</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`py-3 ${mode === 'quality' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
+                  onClick={() => setMode('quality')}
+                >
+                  <Diamond className="w-4 h-4 mr-1 md:mr-2" />
+                  <span className="text-xs md:text-sm">Quality</span>
+                </Button>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="mt-4">
+                {result && !isProcessing ? (
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button
+                      onClick={() => {
+                        setModelImage(null);
+                        setGarmentImage(null);
+                        setModelPreview(null);
+                        setGarmentPreview(null);
+                        setGarmentName(null);
+                        setResult(null);
+                        setProcessingStatus('');
+                      }}
+                      variant="outline"
+                      className="flex-1 auth-button-secondary"
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Generate New
+                    </Button>
                     <Button
                       onClick={processImages}
                       disabled={!modelImage || !garmentImage || isProcessing}
-                      className="w-full bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 py-4 md:py-6"
+                      className="flex-1 auth-button"
                     >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <Play className="w-4 h-4 mr-2" />
-                          Run (~{QUALITY_TIMES[mode]})
-                        </>
-                      )}
+                      <Play className="w-4 h-4 mr-2" />
+                      Run (~{QUALITY_TIMES[mode]})
                     </Button>
-                  )}
-                </div>
-              </Card>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={processImages}
+                    disabled={!modelImage || !garmentImage || isProcessing}
+                    className="w-full auth-button"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 mr-2" />
+                        Run (~{QUALITY_TIMES[mode]})
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
-          <Footer />
+          </motion.div>
         </div>
       </main>
       
