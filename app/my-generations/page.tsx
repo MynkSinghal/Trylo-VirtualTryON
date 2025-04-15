@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Download, Share2, Trash2, Plus, ImageIcon, Loader2 } from 'lucide-react';
+import { Download, Plus, ImageIcon, Loader2 } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 import { supabase } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -68,7 +68,29 @@ export default function MyGenerationsPage() {
 
       if (error) throw error;
 
-      setGenerations(data || []);
+      // Transform the data to include public URLs for images from correct buckets
+      const generationsWithUrls = await Promise.all((data || []).map(async (generation) => {
+        const modelUrl = supabase.storage
+          .from('generations-model-images')
+          .getPublicUrl(generation.model_image_path);
+        
+        const garmentUrl = supabase.storage
+          .from('generations-garment-images')
+          .getPublicUrl(generation.garment_image_path);
+        
+        const resultUrl = supabase.storage
+          .from('generations-result-images')
+          .getPublicUrl(generation.result_image_path);
+
+        return {
+          ...generation,
+          model_image_path: modelUrl.data.publicUrl,
+          garment_image_path: garmentUrl.data.publicUrl,
+          result_image_path: resultUrl.data.publicUrl,
+        };
+      }));
+
+      setGenerations(generationsWithUrls);
     } catch (error) {
       console.error('Error fetching generations:', error);
       toast({
@@ -105,24 +127,6 @@ export default function MyGenerationsPage() {
       });
     } finally {
       setDeleting(null);
-    }
-  };
-
-  const handleShare = async (generation: Generation) => {
-    try {
-      await navigator.share({
-        title: 'Check out my virtual try-on!',
-        text: 'Generated with Trylo Virtual Try-On',
-        url: generation.result_image_path,
-      });
-    } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
-        toast({
-          title: 'Error',
-          description: 'Failed to share generation. Please try again.',
-          variant: 'destructive',
-        });
-      }
     }
   };
 
@@ -255,8 +259,8 @@ export default function MyGenerationsPage() {
                         <p className="text-xs font-medium">Result</p>
                       </div>
                       
-                      {/* Hover Overlay */}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                      {/* Hover Overlay - Only Download Button */}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <motion.button
                           onClick={() => handleDownload(generation)}
                           whileHover={{ scale: 1.1 }}
@@ -264,27 +268,6 @@ export default function MyGenerationsPage() {
                           className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
                         >
                           <Download className="w-5 h-5" />
-                        </motion.button>
-                        <motion.button
-                          onClick={() => handleShare(generation)}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-                        >
-                          <Share2 className="w-5 h-5" />
-                        </motion.button>
-                        <motion.button
-                          onClick={() => handleDelete(generation.id)}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-                          disabled={deleting === generation.id}
-                        >
-                          {deleting === generation.id ? (
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                          ) : (
-                            <Trash2 className="w-5 h-5" />
-                          )}
                         </motion.button>
                       </div>
                     </div>
