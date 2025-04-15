@@ -203,15 +203,17 @@ export default function GarmentLibraryPage() {
                         <Button
                           key={cat.id}
                           variant={category === cat.id ? "default" : "outline"}
-                          className={`w-full justify-start ${
+                          className={`w-full justify-start text-left ${
                             category === cat.id
-                              ? "bg-yellow-400 text-black hover:bg-yellow-500"
-                              : "auth-button-secondary"
+                              ? "bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg"
+                              : "auth-button-secondary rounded-lg"
                           }`}
                           onClick={() => setCategory(cat.id)}
                         >
-                          {cat.icon}
-                          <span className="ml-2">{cat.name}</span>
+                          <div className="flex items-center gap-2">
+                            {cat.icon}
+                            <span>{cat.name}</span>
+                          </div>
                         </Button>
                       ))}
                     </div>
