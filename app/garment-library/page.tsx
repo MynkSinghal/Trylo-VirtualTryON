@@ -203,16 +203,16 @@ export default function GarmentLibraryPage() {
                         <Button
                           key={cat.id}
                           variant={category === cat.id ? "default" : "outline"}
-                          className={`w-full justify-start text-left ${
+                          className={`w-full text-left ${
                             category === cat.id
                               ? "bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg"
                               : "auth-button-secondary rounded-lg"
                           }`}
                           onClick={() => setCategory(cat.id)}
                         >
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 w-full">
                             {cat.icon}
-                            <span>{cat.name}</span>
+                            <span className="text-left">{cat.name}</span>
                           </div>
                         </Button>
                       ))}
@@ -232,20 +232,19 @@ export default function GarmentLibraryPage() {
                     {garments.map((garment) => (
                       <div
                         key={garment.id}
-                        className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:border-yellow-400/50 border border-gray-800 group"
+                        className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer border border-gray-800 group"
                       >
                         <div className="relative h-64">
                           <Image
                             src={garment.image}
                             alt={garment.name}
                             fill
-                            className="object-cover object-center transition-all duration-300 group-hover:opacity-30"
+                            className="object-cover object-center transition-opacity duration-300 group-hover:opacity-30"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           />
                         </div>
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           <div className="flex flex-col items-center gap-4">
-                            <p className="text-sm text-gray-300">Click to select</p>
                             <Button 
                               variant="outline"
                               size="sm"
@@ -256,8 +255,10 @@ export default function GarmentLibraryPage() {
                             </Button>
                           </div>
                         </div>
-                        <div className="absolute bottom-0 left-0 right-0 p-3 bg-black/80 backdrop-blur-sm">
-                          <p className="text-white font-medium text-sm truncate">{garment.name}</p>
+                        <div className="absolute bottom-4 left-4 right-4 text-center">
+                          <span className="px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm font-medium">
+                            {garment.name}
+                          </span>
                         </div>
                       </div>
                     ))}

@@ -24,7 +24,7 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl glass-card bg-black/95 backdrop-blur-sm border border-gray-800 text-white">
+      <DialogContent className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] max-w-3xl glass-card bg-black/95 backdrop-blur-sm border border-gray-800 text-white">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold flex items-center gap-2">
             <User className="w-5 h-5" />
@@ -77,7 +77,7 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                     </div>
                   </div>
                   <div className="absolute bottom-4 left-4 right-4 text-center">
-                    <span className="px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm font-medium">
+                    <span className="px-3 py-1.5 rounded-full bg-black text-white text-sm font-medium">
                       {model.name}
                     </span>
                   </div>
@@ -115,7 +115,7 @@ export function ModelLibraryDialog({ open, onOpenChange, onSelectModel }: ModelL
                     </div>
                   </div>
                   <div className="absolute bottom-4 left-4 right-4 text-center">
-                    <span className="px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm font-medium">
+                    <span className="px-3 py-1.5 rounded-full bg-black text-white text-sm font-medium">
                       {model.name}
                     </span>
                   </div>
