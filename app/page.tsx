@@ -7,6 +7,7 @@ import { Sparkles, Camera, Shirt, Palette, ArrowRight } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { useAuth } from '@/contexts/auth-context';
+import { Marquee } from './components/magicui/marquee';
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -201,12 +202,12 @@ export default function HomePage() {
             >
               <div className="bg-gradient-to-br from-green-500 to-teal-500 w-12 h-12 rounded-xl flex items-center justify-center mb-6">
                 <Palette className="w-6 h-6 text-white" />
-              </div>
+            </div>
               <h3 className="text-xl font-bold mb-3">See Results</h3>
               <p className="text-gray-400">Our AI generates realistic images of you wearing the selected garments in seconds.</p>
             </motion.div>
           </div>
-          
+
           <motion.div 
             variants={itemVariants}
             className="text-center mt-16"
@@ -218,64 +219,87 @@ export default function HomePage() {
                 </span>
                 Try it yourself
               </button>
-            </Link>
+          </Link>
           </motion.div>
         </motion.div>
       </div>
       
       {/* Testimonials */}
       <div className="py-24 relative overflow-hidden">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 mb-16">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="text-center mb-16"
+            className="text-center"
           >
             <h2 className="text-3xl md:text-5xl font-bold mb-2">
               What People Are <span className="font-cursive text-yellow-400">Saying</span>
             </h2>
             <p className="text-gray-400 text-lg">Join hundreds of satisfied users who have transformed their shopping experience</p>
           </motion.div>
+        </div>
           
-          <div className="max-w-5xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-8">
-              <motion.div 
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.7, delay: 0.2 }}
-                className="glass-card p-8"
-              >
+        <div className="w-full">
+          <Marquee pauseOnHover className="py-4">
+            <div className="flex gap-8">
+              <div className="glass-card p-8 w-[400px]">
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-400"></div>
                   <div>
-                    <h4 className="font-bold">Sarah Johnson</h4>
-                    <p className="text-sm text-gray-400">Fashion Enthusiast</p>
+                    <h4 className="font-bold">Priya Sharma</h4>
+                    <p className="text-sm text-gray-400">Fashion Designer</p>
                   </div>
                 </div>
-                <p className="text-gray-300">"This virtual try-on tool has completely changed how I shop online. The accuracy is amazing, and it's saved me from so many return hassles!"</p>
-              </motion.div>
-              
-              <motion.div 
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.7, delay: 0.4 }}
-                className="glass-card p-8"
-              >
+                <p className="text-gray-300">"As a fashion designer, I'm amazed by the accuracy of this virtual try-on tool. It's revolutionizing how my clients visualize designs!"</p>
+              </div>
+
+              <div className="glass-card p-8 w-[400px]">
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400"></div>
                   <div>
-                    <h4 className="font-bold">David Chen</h4>
-                    <p className="text-sm text-gray-400">Tech Blogger</p>
+                    <h4 className="font-bold">Arjun Patel</h4>
+                    <p className="text-sm text-gray-400">Tech Entrepreneur</p>
                   </div>
                 </div>
-                <p className="text-gray-300">"I've tested many virtual try-on solutions, and this one stands out for its realism and ease of use. The technology is truly impressive."</p>
-              </motion.div>
+                <p className="text-gray-300">"The AI technology behind this platform is incredible. It's making online shopping so much more convenient and reliable."</p>
+              </div>
+
+              <div className="glass-card p-8 w-[400px]">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400"></div>
+                  <div>
+                    <h4 className="font-bold">Neha Gupta</h4>
+                    <p className="text-sm text-gray-400">Fashion Blogger</p>
+                  </div>
+                </div>
+                <p className="text-gray-300">"This is a game-changer for my followers! No more uncertainty about how clothes will look. The virtual try-on is spot on!"</p>
+              </div>
+
+              <div className="glass-card p-8 w-[400px]">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-400 to-emerald-400"></div>
+                  <div>
+                    <h4 className="font-bold">Rahul Verma</h4>
+                    <p className="text-sm text-gray-400">E-commerce Manager</p>
+                  </div>
+                </div>
+                <p className="text-gray-300">"We've seen a significant reduction in returns since implementing this on our platform. Our customers love the try-before-you-buy experience!"</p>
+              </div>
+
+              <div className="glass-card p-8 w-[400px]">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-red-400 to-rose-400"></div>
+                  <div>
+                    <h4 className="font-bold">Ananya Desai</h4>
+                    <p className="text-sm text-gray-400">Style Consultant</p>
+                  </div>
+                </div>
+                <p className="text-gray-300">"My styling consultations have become so much more effective. Clients can instantly see how different styles suit them!"</p>
+              </div>
             </div>
-          </div>
+          </Marquee>
         </div>
       </div>
       
