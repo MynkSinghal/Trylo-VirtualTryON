@@ -19,6 +19,7 @@ import {
   User,
   Store,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // Mock data for the garment library
 // In a real app, this would come from an API or database
@@ -142,11 +143,11 @@ export default function GarmentLibraryPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <nav className="border-b border-gray-800 bg-gray-900/50 sticky top-0 z-10 backdrop-blur-sm">
+      <nav className="border-b border-gray-800 bg-black/95 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto flex justify-between items-center h-16 px-6">
           <div className="text-2xl font-bold">Trylo</div>
           <Link href="/studio">
-            <Button variant="outline" className="flex items-center gap-2 px-4">
+            <Button variant="outline" className="auth-button-secondary flex items-center gap-2 px-4">
               <ChevronLeft className="h-4 w-4" />
               Back to Studio
             </Button>
@@ -155,19 +156,35 @@ export default function GarmentLibraryPage() {
       </nav>
 
       <main className="container mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Garment Library</h1>
-          <p className="text-gray-400">Select a garment from our collection to try on</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mb-8"
+        >
+          <h1 className="page-header">Garment Library</h1>
+          <p className="page-subheader">Select a garment from our collection to try on</p>
+        </motion.div>
 
         {/* Gender Selection */}
-        <div className="mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mb-8"
+        >
           <Tabs defaultValue="male" onValueChange={(value) => setGender(value as 'male' | 'female')} className="w-full">
             <TabsList className="grid max-w-md grid-cols-2 mb-8">
-              <TabsTrigger value="male" className="flex items-center gap-2 text-base py-3">
+              <TabsTrigger 
+                value="male" 
+                className="flex items-center gap-2 text-base py-3 data-[state=active]:bg-yellow-400 data-[state=active]:text-black"
+              >
                 <User className="w-4 h-4" /> Men's Collection
               </TabsTrigger>
-              <TabsTrigger value="female" className="flex items-center gap-2 text-base py-3">
+              <TabsTrigger 
+                value="female" 
+                className="flex items-center gap-2 text-base py-3 data-[state=active]:bg-yellow-400 data-[state=active]:text-black"
+              >
                 <User2 className="w-4 h-4" /> Women's Collection
               </TabsTrigger>
             </TabsList>
@@ -175,9 +192,9 @@ export default function GarmentLibraryPage() {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               {/* Categories Section */}
               <div className="lg:col-span-1">
-                <div className="bg-gray-900/30 rounded-lg p-4">
-                  <h2 className="text-xl font-semibold mb-4 flex items-center">
-                    <Store className="mr-2 h-5 w-5" /> Categories
+                <div className="glass-card p-6 bg-black/95 backdrop-blur-sm border border-gray-800">
+                  <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Store className="w-5 h-5" /> Categories
                   </h2>
                   <Separator className="my-4 bg-gray-800" />
                   <ScrollArea className="h-[calc(100vh-280px)]">
@@ -188,8 +205,8 @@ export default function GarmentLibraryPage() {
                           variant={category === cat.id ? "default" : "outline"}
                           className={`w-full justify-start ${
                             category === cat.id
-                              ? "bg-yellow-500 text-black hover:bg-yellow-600"
-                              : "hover:bg-gray-800"
+                              ? "bg-yellow-400 text-black hover:bg-yellow-500"
+                              : "auth-button-secondary"
                           }`}
                           onClick={() => setCategory(cat.id)}
                         >
@@ -204,47 +221,50 @@ export default function GarmentLibraryPage() {
 
               {/* Garments Grid */}
               <div className="lg:col-span-3">
-                <div className="bg-gray-900/30 rounded-lg p-6">
-                  <h2 className="text-xl font-semibold mb-6 flex items-center">
-                    <Shirt className="mr-2 h-5 w-5" /> {gender === 'male' ? 'Men\'s' : 'Women\'s'} {categories.find(c => c.id === category)?.name}
+                <div className="glass-card p-6 bg-black/95 backdrop-blur-sm border border-gray-800">
+                  <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Shirt className="w-5 h-5" /> {gender === 'male' ? 'Men\'s' : 'Women\'s'} {categories.find(c => c.id === category)?.name}
                   </h2>
                   <Separator className="my-4 bg-gray-800" />
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {garments.map((garment) => (
-                      <Card
+                      <div
                         key={garment.id}
-                        className="bg-gray-900/80 border-gray-800 overflow-hidden hover:border-yellow-500 transition-all duration-300"
+                        className="relative bg-black/50 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:border-yellow-400/50 border border-gray-800 group"
                       >
-                        <CardHeader className="p-0">
-                          <div className="h-64 relative overflow-hidden bg-gray-800 border-b border-gray-700">
-                            <Image
-                              src={garment.image}
-                              alt={garment.name}
-                              fill
-                              className="object-cover object-center hover:scale-105 transition-transform duration-300"
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            />
+                        <div className="relative h-64">
+                          <Image
+                            src={garment.image}
+                            alt={garment.name}
+                            fill
+                            className="object-cover object-center transition-all duration-300 group-hover:opacity-30"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          />
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="flex flex-col items-center gap-4">
+                            <p className="text-sm text-gray-300">Click to select</p>
+                            <Button 
+                              variant="outline"
+                              size="sm"
+                              className="auth-button"
+                              onClick={() => handleSelectGarment(garment)}
+                            >
+                              Select Garment
+                            </Button>
                           </div>
-                        </CardHeader>
-                        <CardContent className="p-4">
-                          <CardTitle className="text-base">{garment.name}</CardTitle>
-                        </CardContent>
-                        <CardFooter className="p-4 pt-0">
-                          <Button
-                            onClick={() => handleSelectGarment(garment)}
-                            className="w-full bg-yellow-500 text-black hover:bg-yellow-600"
-                          >
-                            Select Garment
-                          </Button>
-                        </CardFooter>
-                      </Card>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 p-3 bg-black/80 backdrop-blur-sm">
+                          <p className="text-white font-medium text-sm truncate">{garment.name}</p>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
               </div>
             </div>
           </Tabs>
-        </div>
+        </motion.div>
       </main>
       
       <footer className="border-t border-gray-800 py-8 mt-12">
