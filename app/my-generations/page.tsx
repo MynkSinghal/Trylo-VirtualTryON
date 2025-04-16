@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Download, Plus, ImageIcon, Loader2 } from 'lucide-react';
+import { Download, Plus, ImageIcon, Loader2, Trash2 } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 import { supabase } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { toast } from 'sonner';
 
 interface Generation {
   id: number;
@@ -24,10 +26,11 @@ export default function MyGenerationsPage() {
   const { toast } = useToast();
   const [generations, setGenerations] = useState<Generation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [deleting, setDeleting] = useState<number | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
+  const supabase = createClientComponentClient();
 
   // Format text to proper case
   const formatText = (text: string) => {
@@ -142,30 +145,52 @@ export default function MyGenerationsPage() {
     fetchGenerations(nextPage);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (generation: Generation) => {
     try {
-      setDeleting(id);
-      const { error } = await supabase
+      setIsDeleting(true);
+      
+      // Delete files from storage
+      const { error: storageError } = await supabase.storage
+        .from('generations-model-images')
+        .remove([generation.model_image_path.split('/').pop()!]);
+      
+      if (storageError) throw storageError;
+      
+      const { error: garmentError } = await supabase.storage
+        .from('generations-garment-images')
+        .remove([generation.garment_image_path.split('/').pop()!]);
+      
+      if (garmentError) throw garmentError;
+      
+      const { error: resultError } = await supabase.storage
+        .from('generations-result-images')
+        .remove([generation.result_image_path.split('/').pop()!]);
+      
+      if (resultError) throw resultError;
+
+      // Delete the database record
+      const { error: dbError } = await supabase
         .from('generations')
         .delete()
-        .eq('id', id);
+        .eq('id', generation.id);
 
-      if (error) throw error;
+      if (dbError) throw dbError;
 
-      setGenerations(prev => prev.filter(gen => gen.id !== id));
+      // Update the UI
+      setGenerations(prev => prev.filter(g => g.id !== generation.id));
       toast({
-        title: 'Success',
-        description: 'Generation deleted successfully.',
+        title: "Success",
+        description: "Generation deleted successfully",
       });
     } catch (error) {
       console.error('Error deleting generation:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to delete generation. Please try again.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to delete generation",
+        variant: "destructive",
       });
     } finally {
-      setDeleting(null);
+      setIsDeleting(false);
     }
   };
 
@@ -314,13 +339,23 @@ export default function MyGenerationsPage() {
                           })}
                         </div>
                       </div>
-                      <button
-                        onClick={() => handleDownload(generation)}
-                        className="w-full bg-yellow-400/10 hover:bg-yellow-400/20 text-yellow-400 rounded-full py-2 px-4 flex items-center justify-center gap-2 transition-colors duration-200"
-                      >
-                        <Download className="w-4 h-4" />
-                        <span>Download Result</span>
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleDownload(generation)}
+                          className="flex-1 bg-yellow-400/10 hover:bg-yellow-400/20 text-yellow-400 rounded-full py-2 px-4 flex items-center justify-center gap-2 transition-colors duration-200"
+                          disabled={isDeleting}
+                        >
+                          <Download className="w-4 h-4" />
+                          <span>Download Result</span>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(generation)}
+                          className="bg-red-400/10 hover:bg-red-400/20 text-red-400 rounded-full py-2 px-4 flex items-center justify-center gap-2 transition-colors duration-200"
+                          disabled={isDeleting}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 ))}
