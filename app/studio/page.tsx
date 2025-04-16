@@ -309,100 +309,6 @@ export default function StudioPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="grid grid-cols-1 lg:grid-cols-3 gap-6"
           >
-            {/* Model Upload Box */}
-            <div className="glass-card p-6 bg-black/95 backdrop-blur-sm border border-gray-800">
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <User className="w-5 h-5" />
-                Upload Model Photo
-              </h2>
-              <div
-                id="model-box"
-                className="border-2 border-dashed border-gray-700 rounded-lg p-6 h-[500px] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:border-yellow-400 relative group"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => handleDrop(e, 'model')}
-                tabIndex={0}
-              >
-                {modelPreview ? (
-                  <div className="relative h-full w-full flex items-center justify-center">
-                    <Image
-                      src={modelPreview}
-                      alt="Model preview"
-                      fill
-                      className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-30"
-                      unoptimized
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="flex flex-col items-center gap-4">
-                        <p className="text-sm text-gray-300">Click or drag to replace</p>
-                        <div className="flex gap-2">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => handleFileSelect(e, 'model')}
-                            id="model-upload"
-                          />
-                          <Button 
-                            asChild 
-                            variant="outline"
-                            size="sm"
-                            className="auth-button"
-                          >
-                            <label htmlFor="model-upload">Replace Image</label>
-                          </Button>
-                          
-                          <Button 
-                            variant="outline"
-                            size="sm"
-                            className="auth-button flex items-center gap-2"
-                            onClick={() => setModelLibraryOpen(true)}
-                          >
-                            <User className="w-4 h-4" />
-                            Model Library
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-6 text-center">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-black/30 flex items-center justify-center transition-transform group-hover:scale-110 duration-300">
-                      <Upload className="w-10 h-10 text-gray-500 transition-colors group-hover:text-yellow-400" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-gray-300 text-lg font-medium">Drop your image here</p>
-                      <p className="text-gray-400 text-sm">or paste from clipboard</p>
-                    </div>
-                    <div className="flex gap-2 justify-center">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => handleFileSelect(e, 'model')}
-                        id="model-upload"
-                      />
-                      <Button 
-                        asChild 
-                        variant="outline"
-                        className="auth-button-secondary"
-                      >
-                        <label htmlFor="model-upload">Choose File</label>
-                      </Button>
-                      
-                      <Button 
-                        variant="outline"
-                        className="auth-button-secondary flex items-center gap-2"
-                        onClick={() => setModelLibraryOpen(true)}
-                      >
-                        <User className="w-4 h-4" />
-                        Model Library
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
             {/* Garment Upload Box */}
             <div className="glass-card p-6 bg-black/95 backdrop-blur-sm border border-gray-800">
               <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -530,6 +436,100 @@ export default function StudioPage() {
                     <span className="text-xs md:text-sm">Full Body</span>
                   </Button>
                 </div>
+              </div>
+            </div>
+
+            {/* Model Upload Box */}
+            <div className="glass-card p-6 bg-black/95 backdrop-blur-sm border border-gray-800">
+              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                <User className="w-5 h-5" />
+                Upload Model Photo
+              </h2>
+              <div
+                id="model-box"
+                className="border-2 border-dashed border-gray-700 rounded-lg p-6 h-[500px] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:border-yellow-400 relative group"
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => handleDrop(e, 'model')}
+                tabIndex={0}
+              >
+                {modelPreview ? (
+                  <div className="relative h-full w-full flex items-center justify-center">
+                    <Image
+                      src={modelPreview}
+                      alt="Model preview"
+                      fill
+                      className="object-contain rounded-lg transition-all duration-300 group-hover:opacity-30"
+                      unoptimized
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="flex flex-col items-center gap-4">
+                        <p className="text-sm text-gray-300">Click or drag to replace</p>
+                        <div className="flex gap-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleFileSelect(e, 'model')}
+                            id="model-upload"
+                          />
+                          <Button 
+                            asChild 
+                            variant="outline"
+                            size="sm"
+                            className="auth-button"
+                          >
+                            <label htmlFor="model-upload">Replace Image</label>
+                          </Button>
+                          
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            className="auth-button flex items-center gap-2"
+                            onClick={() => setModelLibraryOpen(true)}
+                          >
+                            <User className="w-4 h-4" />
+                            Model Library
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-6 text-center">
+                    <div className="w-20 h-20 mx-auto rounded-full bg-black/30 flex items-center justify-center transition-transform group-hover:scale-110 duration-300">
+                      <Upload className="w-10 h-10 text-gray-500 transition-colors group-hover:text-yellow-400" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-gray-300 text-lg font-medium">Drop your image here</p>
+                      <p className="text-gray-400 text-sm">or paste from clipboard</p>
+                    </div>
+                    <div className="flex gap-2 justify-center">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleFileSelect(e, 'model')}
+                        id="model-upload"
+                      />
+                      <Button 
+                        asChild 
+                        variant="outline"
+                        className="auth-button-secondary"
+                      >
+                        <label htmlFor="model-upload">Choose File</label>
+                      </Button>
+                      
+                      <Button 
+                        variant="outline"
+                        className="auth-button-secondary flex items-center gap-2"
+                        onClick={() => setModelLibraryOpen(true)}
+                      >
+                        <User className="w-4 h-4" />
+                        Model Library
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

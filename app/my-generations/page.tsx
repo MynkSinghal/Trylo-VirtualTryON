@@ -149,22 +149,27 @@ export default function MyGenerationsPage() {
     try {
       setIsDeleting(true);
       
-      // Delete files from storage
-      const { error: storageError } = await supabase.storage
-        .from('generations-model-images')
-        .remove([generation.model_image_path.split('/').pop()!]);
+      // Extract file paths from the URLs
+      const modelPath = generation.model_image_path.split('/').slice(-2).join('/');
+      const garmentPath = generation.garment_image_path.split('/').slice(-2).join('/');
+      const resultPath = generation.result_image_path.split('/').slice(-2).join('/');
       
-      if (storageError) throw storageError;
+      // Delete files from storage
+      const { error: modelError } = await supabase.storage
+        .from('generations-model-images')
+        .remove([modelPath]);
+      
+      if (modelError) throw modelError;
       
       const { error: garmentError } = await supabase.storage
         .from('generations-garment-images')
-        .remove([generation.garment_image_path.split('/').pop()!]);
+        .remove([garmentPath]);
       
       if (garmentError) throw garmentError;
       
       const { error: resultError } = await supabase.storage
         .from('generations-result-images')
-        .remove([generation.result_image_path.split('/').pop()!]);
+        .remove([resultPath]);
       
       if (resultError) throw resultError;
 
