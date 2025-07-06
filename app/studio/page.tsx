@@ -20,11 +20,8 @@ import {
   User,
 } from 'lucide-react';
 import Image from 'next/image';
-import { generateTryOn, type Category } from '@/lib/api';
+import { generateTryOn } from '@/lib/api';
 import { ProcessingStatus } from '../components/ProcessingStatus';
-import TopSvg from '../icons/top.svg';
-import BottomSvg from '../icons/bottom.svg';
-import FullbodySvg from '../icons/fullbody.svg';
 import Link from 'next/link';
 import { Footer } from '../components/Footer';
 import { Logo } from '../components/Logo';
@@ -35,11 +32,7 @@ import { Model } from '../../src/lib/modelLibrary';
 import { Navbar } from '../components/Navbar';
 import { motion } from 'framer-motion';
 
-const QUALITY_TIMES = {
-  performance: '9sec',
-  balanced: '15sec',
-  quality: '20sec'
-} as const;
+
 
 // Helper function to convert base64 to File
 const base64ToFile = async (url: string, filename: string): Promise<File> => {
@@ -57,8 +50,6 @@ export default function StudioPage() {
   const [garmentName, setGarmentName] = useState<string | null>(null);
   const [modelName, setModelName] = useState<string | null>(null);
   const [modelLibraryOpen, setModelLibraryOpen] = useState(false);
-  const [category, setCategory] = useState<Category>('tops');
-  const [mode, setMode] = useState<'performance' | 'balanced' | 'quality'>('balanced');
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStatus, setProcessingStatus] = useState<string>('');
   const [result, setResult] = useState<string | null>(null);
@@ -257,8 +248,6 @@ export default function StudioPage() {
       const results = await generateTryOn({
         modelImage,
         garmentImage,
-        category,
-        mode,
         numSamples: 1,
         onStatusUpdate: (status) => {
           console.log('Status update:', status);
@@ -268,9 +257,9 @@ export default function StudioPage() {
       });
       
       console.log('Received results:', results);
-      if (results.length > 0) {
-        console.log('Setting result to:', results[0]);
-        setResult(results[0]);
+      if (results.outputImages.length > 0) {
+        console.log('Setting result to:', results.outputImages[0]);
+        setResult(results.outputImages[0]);
       } else {
         throw new Error('No results received from the API');
       }
@@ -406,36 +395,7 @@ export default function StudioPage() {
                   )}
                 </div>
 
-                {/* Garment Type Buttons */}
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={`flex-1 py-3 rounded-full ${category === 'tops' ? 'bg-yellow-400 text-black hover:bg-yellow-500 rounded-full' : 'auth-button-secondary'}`}
-                    onClick={() => setCategory('tops')}
-                  >
-                    <TopSvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'tops' ? 'text-black' : 'text-white'}`} />
-                    <span className="text-xs md:text-sm">Top</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={`flex-1 py-3 rounded-full ${category === 'bottoms' ? 'bg-yellow-400 text-black hover:bg-yellow-500 rounded-full' : 'auth-button-secondary'}`}
-                    onClick={() => setCategory('bottoms')}
-                  >
-                    <BottomSvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'bottoms' ? 'text-black' : 'text-white'}`} />
-                    <span className="text-xs md:text-sm">Bottom</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={`flex-1 py-3 rounded-full ${category === 'one-pieces' ? 'bg-yellow-400 text-black hover:bg-yellow-500 rounded-full' : 'auth-button-secondary'}`}
-                    onClick={() => setCategory('one-pieces')}
-                  >
-                    <FullbodySvg className={`w-4 h-4 mr-1 md:mr-2 ${category === 'one-pieces' ? 'text-black' : 'text-white'}`} />
-                    <span className="text-xs md:text-sm">Full Body</span>
-                  </Button>
-                </div>
+
               </div>
             </div>
 
@@ -562,33 +522,7 @@ export default function StudioPage() {
                 )}
               </div>
 
-              {/* Quality Mode Selection */}
-              <div className="mt-6 grid grid-cols-3 gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={`py-3 rounded-full ${mode === 'performance' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
-                  onClick={() => setMode('performance')}
-                >
-                  <span className="text-xs md:text-sm">Performance</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={`py-3 rounded-full ${mode === 'balanced' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
-                  onClick={() => setMode('balanced')}
-                >
-                  <span className="text-xs md:text-sm">Balanced</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={`py-3 rounded-full ${mode === 'quality' ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'auth-button-secondary'}`}
-                  onClick={() => setMode('quality')}
-                >
-                  <span className="text-xs md:text-sm">Quality</span>
-                </Button>
-              </div>
+
 
               {/* Action Buttons */}
               <div className="mt-4">
@@ -612,7 +546,7 @@ export default function StudioPage() {
                         className="flex-1 auth-button"
                       >
                         <Play className="w-4 h-4 mr-2" />
-                        Run (~{QUALITY_TIMES[mode]})
+                        Generate Try-On
                       </Button>
                     </div>
                     {result && !isProcessing && (
@@ -638,10 +572,10 @@ export default function StudioPage() {
                         Processing...
                       </>
                     ) : (
-                      <>
-                        <Play className="w-4 h-4 mr-2" />
-                        Run (~{QUALITY_TIMES[mode]})
-                      </>
+                                          <>
+                      <Play className="w-4 h-4 mr-2" />
+                      Generate Try-On
+                    </>
                     )}
                   </Button>
                 )}

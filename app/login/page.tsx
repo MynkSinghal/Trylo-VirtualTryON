@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowRight, LogIn, Loader2 } from 'lucide-react';
+import { ArrowRight, LogIn, Loader2, TestTube } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 import { supabase } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -49,6 +49,16 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fillDemoCredentials = () => {
+    setEmail('test@test.com');
+    setPassword('test@123');
+    
+    toast({
+      title: 'Demo Credentials Loaded',
+      description: 'You can now click "Sign In" to access the demo account.',
+    });
   };
 
   return (
@@ -127,6 +137,28 @@ export default function LoginPage() {
                 )}
               </motion.button>
             </form>
+
+            {/* Demo Credentials Section */}
+            <div className="mt-6 pt-6 border-t border-white/10">
+              <div className="text-center">
+                <p className="text-sm text-gray-400 mb-3">
+                  For recruiters and demo purposes
+                </p>
+                <motion.button
+                  type="button"
+                  onClick={fillDemoCredentials}
+                  className="auth-button-secondary flex items-center gap-2"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <TestTube className="w-4 h-4" />
+                  Use Demo Credentials
+                </motion.button>
+                <p className="text-xs text-gray-500 mt-3">
+                  test@test.com • test@123
+                </p>
+              </div>
+            </div>
           </div>
           
           <p className="mt-8 text-center text-gray-400">
